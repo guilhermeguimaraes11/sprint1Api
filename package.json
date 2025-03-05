@@ -1,0 +1,17 @@
+{
+  "name": "api_url_base",
+  "version": "2.0.0",
+  "description": "API novo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js"
+  },
+  "author": "Vidal803",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.11.3"
+  }
+}
