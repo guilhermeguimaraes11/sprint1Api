@@ -4,8 +4,8 @@
 curl --location 'http://localhost:5000/reservas/v1/cadastro' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "nome": "Gustavo Almeida",
-    "email":"gustavo.almeida@example.com",
+    "nome": "Caio Luccas",
+    "email":"caio.luccas@example.com",
     "NIF":"5439871",
     "senha":"senha123"
 }'
@@ -17,7 +17,7 @@ curl --location 'http://localhost:5000/reservas/v1/cadastro' \
 curl --location 'http://localhost:5000/reservas/v1/login' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "email":"gustavo.almeida@example.com",
+    "email":"caio.luccas@example.com",
     "senha":"senha123"
 }'
 
@@ -35,9 +35,9 @@ curl --location 'http://localhost:5000/reservas/v1/login' \
 curl --location --request PUT 'http://localhost:5000/reservas/v1/usuario/1' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "nome": "Renata Souza",
-    "email":"renata.souza@example.com",
-    "senha":"senha456"
+    "nome": "Caio Luccas",
+    "email":"caio.luccas@example.com",
+    "senha":"senha123"
 }'
 
 -------------------------------------------------------------------------------
