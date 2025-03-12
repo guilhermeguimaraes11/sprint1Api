@@ -1,14 +1,15 @@
 const router = require("express").Router(); //importando o módolo express
 
 const reservaController = require("../controllers/reservaController");
-const usuarioController = require("../controllers/usuarioController");
+const usuarioController = require("../controllers/userController");
 const salaController = require("../controllers/salaController");
+const userController = require("../controllers/userController");
 
-router.post("/cadastro", usuarioController.createUsuarios);
-router.post("/login", usuarioController.loginUsuario);
-router.get("/usuarios", usuarioController.getAllUsuarios);
-router.put("/usuario/:id_usuario", usuarioController.updateUsuario);
-router.delete("/usuario/:id_usuario", usuarioController.deleteUsuario);
+router.post("/user", userController.createUser);
+router.post("/login", userController.loginUser);
+router.get("/user", userController.getAllUsers);
+router.put("/user/:id_usuario", userController.updateUser);
+router.delete("/user/:id_usuario", userController.deleteUser);
 
 router.get('/usuario/perfil/:id_usuario', usuarioController.getUsuarioById);
 router.get('/usuario/perfil/:id_usuario/reservas', usuarioController.getUsuarioReservas);
