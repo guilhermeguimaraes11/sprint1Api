@@ -1,6 +1,5 @@
 const connect = require("../db/connect");
 const validateUser = require("../services/validateUser");
-const validateCpf = require("../services/validateCpf");
 
 module.exports = class userController {
   static async createUser(req, res) {
@@ -12,33 +11,22 @@ module.exports = class userController {
     }
 
     try {
-      const cpfError = await validateCpf(cpf);
-      if (cpfError) {
-        return res.status(400).json(cpfError);
-      }
-
       const query = `INSERT INTO usuario (cpf, senha, email, nome, ) VALUES (?, ?, ?, ?)`;
-      connect.query(
-        query,
-        [cpf, senha, email, nome, ],
-        (err) => {
-          if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-              if (err.message.includes("email")) {
-                return res.status(400).json({ error: "Email já cadastrado" });
-              }
-            } else {
-              console.log(err);
-              return res
-                .status(500)
-                .json({ error: "Erro interno do servidor", err });
+      connect.query(query, [cpf, senha, email, nome], (err) => {
+        if (err) {
+          if (err.code === "ER_DUP_ENTRY") {
+            if (err.message.includes("email")) {
+              return res.status(400).json({ error: "Email já cadastrado" });
             }
+          } else {
+            console.log(err);
+            return res
+              .status(500)
+              .json({ error: "Erro interno do servidor", err });
           }
-          return res
-            .status(201)
-            .json({ message: "Usuário criado com sucesso" });
         }
-      );
+        return res.status(201).json({ message: "Usuário criado com sucesso" });
+      });
     } catch (error) {
       return res.status(500).json({ error });
     }
@@ -71,10 +59,6 @@ module.exports = class userController {
     }
 
     try {
-      const cpfError = await validateCpf(cpf, id);
-      if (cpfError) {
-        return res.status(400).json(cpfError);
-      }
       const query =
         "UPDATE usuario SET cpf = ?, email = ?, password = ?, name = ? , data_nascimento=? WHERE id_usuario = ?";
       connect.query(

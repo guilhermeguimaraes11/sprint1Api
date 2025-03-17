@@ -18,6 +18,15 @@ module.exports = function validateUser({
     return { error: "Email inválido. Deve conter @" };
   }
 
+  if (nome.length < 2) {
+    return { error: "O nome deve ter pelo menos 2 caracteres" };
+  }
+
+  if (senha.length < 6) {
+    return { error: "A senha deve ter pelo menos 6 caracteres" };
+  }
+
+
   return null; // Retorna null se não houver erro
 };
 

@@ -1,4 +1,4 @@
-const router = require("express").Router(); //importando o módolo express
+const router = require("express").Router();
 
 const reservaController = require("../controllers/reservaController");
 const usuarioController = require("../controllers/userController");
@@ -10,9 +10,6 @@ router.post("/login", userController.loginUser);
 router.get("/user", userController.getAllUsers);
 router.put("/user/:id_usuario", userController.updateUser);
 router.delete("/user/:id_usuario", userController.deleteUser);
-
-router.get('/usuario/perfil/:id_usuario', usuarioController.getUsuarioById);
-router.get('/usuario/perfil/:id_usuario/reservas', usuarioController.getUsuarioReservas);
 
 router.get("/reserva", reservaController.createReservas);
 router.post("/reserva", reservaController.createReservas);
