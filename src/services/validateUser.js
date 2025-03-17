@@ -2,9 +2,9 @@ module.exports = function validateUser({
   cpf,
   email,
   senha,
-  nome,
+  nomecompleto,
 }) {
-  if (!cpf || !email || !senha || !nome ) {
+  if (!cpf || !email || !senha || !nomecompleto ) {
     return { error: "Todos os campos devem ser preenchidos" };
   }
 
@@ -18,8 +18,8 @@ module.exports = function validateUser({
     return { error: "Email inválido. Deve conter @" };
   }
 
-  if (nome.length < 2) {
-    return { error: "O nome deve ter pelo menos 2 caracteres" };
+  if (nomecompleto.length < 2) {
+    return { error: "O nomecompleto deve ter pelo menos 2 caracteres" };
   }
 
   if (senha.length < 6) {

@@ -3,7 +3,7 @@ const validateUser  = require("../services/validateUser");
 
 module.exports = class userController {
   static async createUser (req, res) {
-    const { cpf, email, senha, nome } = req.body;
+    const { cpf, email, senha, nomecompleto } = req.body;
 
     const validationError = validateUser (req.body);
     if (validationError) {
@@ -11,8 +11,8 @@ module.exports = class userController {
     }
 
     try {
-      const query = `INSERT INTO usuario (cpf, email, senha, nome) VALUES (?, ?, ?, ?)`;
-      connect.query(query, [cpf, email, senha, nome], (err) => {
+      const query = `INSERT INTO usuario (cpf, email, senha, nomecompleto) VALUES (?, ?, ?, ?)`;
+      connect.query(query, [cpf, email, senha, nomecompleto], (err) => {
         if (err) {
           console.error(err); // Log do erro para depuração
           if (err.code === "ER_DUP_ENTRY") {

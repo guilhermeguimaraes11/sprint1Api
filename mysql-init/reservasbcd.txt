@@ -5,6 +5,7 @@ CREATE TABLE usuario(
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nomecompleto VARCHAR(50) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    cpf CHAR(11) NOT NULL UNIQUE,
     senha VARCHAR(16) NOT NULL
 );
 
@@ -29,27 +30,27 @@ CREATE TABLE reserva_sala (
 );
 
 -- Inserindo usuários
-INSERT INTO usuario (nomecompleto, email, senha) VALUES
-('João Silva', 'joao.silva@example.com', 'senha123'),
-('Maria Oliveira', 'maria.oliveira@example.com', 'senha123'),
-('Carlos Pereira', 'carlos.pereira@example.com', 'senha123'),
-('Ana Souza', 'ana.souza@example.com', 'senha123'),
-('Pedro Costa', 'pedro.costa@example.com', 'senha123'),
-('Laura Lima', 'laura.lima@example.com', 'senha123'),
-('Lucas Alves', 'lucas.alves@example.com', 'senha123'),
-('Fernanda Rocha', 'fernanda.rocha@example.com', 'senha123'),
-('Rafael Martins', 'rafael.martins@example.com', 'senha123'),
-('Juliana Nunes', 'juliana.nunes@example.com', 'senha123'),
-('Paulo Araujo', 'paulo.araujo@example.com', 'senha123'),
-('Beatriz Melo', 'beatriz.melo@example.com', 'senha123'),
-('Renato Dias', 'renato.dias@example.com', 'senha123'),
-('Camila Ribeiro', 'camila.ribeiro@example.com', 'senha123'),
-('Thiago Teixeira', 'thiago.teixeira@example.com', 'senha123'),
-('Patrícia Fernandes', 'patricia.fernandes@example.com', 'senha123'),
-('Rodrigo Gomes', 'rodrigo.gomes@example.com', 'senha123'),
-('Mariana Batista', 'mariana.batista@example.com', 'senha123'),
-('Fábio Freitas', 'fabio.freitas@example.com', 'senha123'),
-('Isabela Cardoso', 'isabela.cardoso@example.com', 'senha123');
+INSERT INTO usuario (cpf, nomecompleto, email, senha) VALUES
+('12345678901', 'João Silva', 'joao.silva@example.com', 'senha123'),
+('23456789012', 'Maria Oliveira', 'maria.oliveira@example.com', 'senha123'),
+('34567890123', 'Carlos Pereira', 'carlos.pereira@example.com', 'senha123'),
+('45678901234', 'Ana Souza', 'ana.souza@example.com', 'senha123'),
+('56789012345', 'Pedro Costa', 'pedro.costa@example.com', 'senha123'),
+('67890123456', 'Laura Lima', 'laura.lima@example.com', 'senha123'),
+('78901234567', 'Lucas Alves', 'lucas.alves@example.com', 'senha123'),
+('89012345678', 'Fernanda Rocha', 'fernanda.rocha@example.com', 'senha123'),
+('90123456789', 'Rafael Martins', 'rafael.martins@example.com', 'senha123'),
+('01234567890', 'Juliana Nunes', 'juliana.nunes@example.com', 'senha123'),
+('12345678902', 'Paulo Araujo', 'paulo.araujo@example.com', 'senha123'),
+('23456789013', 'Beatriz Melo', 'beatriz.melo@example.com', 'senha123'),
+('34567890124', 'Renato Dias', 'renato.dias@example.com', 'senha123'),
+('45678901235', 'Camila Ribeiro', 'camila.ribeiro@example.com', 'senha123'),
+('56789012346', 'Thiago Teixeira', 'thiago.teixeira@example.com', 'senha123'),
+('67890123457', 'Patrícia Fernandes', 'patricia.fernandes@example.com', 'senha123'),
+('78901234568', 'Rodrigo Gomes', 'rodrigo.gomes@example.com', 'senha123'),
+('89012345679', 'Mariana Batista', 'mariana.batista@example.com', 'senha123'),
+('90123456780', 'Fábio Freitas', 'fabio.freitas@example.com', 'senha123'),
+('01234567891', 'Isabela Cardoso', 'isabela.cardoso@example.com', 'senha123');
 
 -- Inserindo salas
 INSERT INTO sala (nome, descricao, bloco, tipo, capacidade) VALUES
