@@ -1,34 +1,36 @@
 const connect = require("../db/connect");
-const validateUser = require("../services/validateUser");
+const validateUser  = require("../services/validateUser");
 
 module.exports = class userController {
-  static async createUser(req, res) {
+  static async createUser (req, res) {
     const { cpf, email, senha, nome } = req.body;
 
-    const validationError = validateUser(req.body);
+    const validationError = validateUser (req.body);
     if (validationError) {
       return res.status(400).json(validationError);
     }
 
     try {
-      const query = `INSERT INTO usuario (cpf, senha, email, nome, ) VALUES (?, ?, ?, ?)`;
-      connect.query(query, [cpf, senha, email, nome], (err) => {
+      const query = `INSERT INTO usuario (cpf, email, senha, nome) VALUES (?, ?, ?, ?)`;
+      connect.query(query, [cpf, email, senha, nome], (err) => {
         if (err) {
+          console.error(err); // Log do erro para depuração
           if (err.code === "ER_DUP_ENTRY") {
             if (err.message.includes("email")) {
               return res.status(400).json({ error: "Email já cadastrado" });
             }
+            if (err.message.includes("cpf")) {
+              return res.status(400).json({ error: "CPF já cadastrado" });
+            }
           } else {
-            console.log(err);
-            return res
-              .status(500)
-              .json({ error: "Erro interno do servidor", err });
+            return res.status(500).json({ error: "Erro interno do servidor" });
           }
         }
         return res.status(201).json({ message: "Usuário criado com sucesso" });
       });
     } catch (error) {
-      return res.status(500).json({ error });
+      console.error(error); // Log do erro para depuração
+      return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
   static async getAllUsers(req, res) {
@@ -51,7 +53,7 @@ module.exports = class userController {
     }
   }
   static async updateUser(req, res) {
-    const { cpf, email, password, name, id } = req.body;
+    const { cpf, email, senha, name, id } = req.body;
 
     const validationError = validateUser(req.body);
     if (validationError) {
@@ -60,10 +62,10 @@ module.exports = class userController {
 
     try {
       const query =
-        "UPDATE usuario SET cpf = ?, email = ?, password = ?, name = ? , data_nascimento=? WHERE id_usuario = ?";
+        "UPDATE usuario SET cpf = ?, email = ?, senha = ?, name = ? WHERE id_usuario = ?";
       connect.query(
         query,
-        [cpf, email, password, name, data_nascimento, id],
+        [cpf, email, senha, name, id],
         (err, results) => {
           if (err) {
             if (err.code === "ER_DUP_ENTRY") {
@@ -137,7 +139,7 @@ module.exports = class userController {
 
         const user = results[0];
 
-        if (user.password !== password) {
+        if (user.senha !== senha) {
           return res.status(401).json({ error: "Senha incorreta" });
         }
 
