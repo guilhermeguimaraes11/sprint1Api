@@ -53,8 +53,8 @@ module.exports = class userController {
     }
   }
   static async updateUser(req, res) {
-    const { cpf, email, senha, name, id } = req.body;
-
+    const { cpf, email, senha, nomecompleto } = req.body;
+    const { id_usuario } = req.params;
     const validationError = validateUser(req.body);
     if (validationError) {
       return res.status(400).json(validationError);
@@ -62,10 +62,10 @@ module.exports = class userController {
 
     try {
       const query =
-        "UPDATE usuario SET cpf = ?, email = ?, senha = ?, name = ? WHERE id_usuario = ?";
+        "UPDATE usuario SET cpf = ?, email = ?, senha = ?, nomecompleto = ? WHERE id_usuario = ?";
       connect.query(
         query,
-        [cpf, email, senha, name, id],
+        [cpf, email, senha, nomecompleto, id_usuario],
         (err, results) => {
           if (err) {
             if (err.code === "ER_DUP_ENTRY") {
@@ -91,29 +91,41 @@ module.exports = class userController {
     }
   }
   static async deleteUser(req, res) {
-    const userId = req.params.id;
+    const userId = req.params.id_usuario;
     const query = `DELETE FROM usuario WHERE id_usuario = ?`;
     const values = [userId];
-
+  
     try {
       connect.query(query, values, function (err, results) {
         if (err) {
+          // Verificando o erro específico de chave estrangeira
+          if (err.code === 'ER_ROW_IS_REFERENCED_2') {
+            console.error('Erro de chave estrangeira:', err);
+            return res.status(400).json({
+              error: "Não é possível excluir este usuário, pois ele possuí uma reserva."
+            });
+          }
+  
+          // Outros erros gerais
           console.error(err);
           return res.status(500).json({ error: "Erro interno do servidor" });
         }
-
+  
+        // Caso não tenha encontrado o usuário para deletar
         if (results.affectedRows === 0) {
           return res.status(404).json({ error: "Usuário não encontrado" });
         }
-
-        return res
-          .status(200)
-          .json({ message: "Usuário excluído com ID: " + userId });
+  
+        // Sucesso ao excluir o usuário
+        return res.status(200).json({
+          message: "Usuário excluído com ID: " + userId
+        });
       });
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
+  
   }
 
   // Método de Login - Implementar

@@ -19,7 +19,7 @@ module.exports = function validateUser({
   }
 
   if (nomecompleto.length < 2) {
-    return { error: "O nomecompleto deve ter pelo menos 2 caracteres" };
+    return { error: "O nome deve ter pelo menos 2 caracteres" };
   }
 
   if (senha.length < 6) {
