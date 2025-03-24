@@ -1,18 +1,16 @@
 const connect = require("../db/connect");
+const validateReserva = require("../services/validateReserva")
 
 module.exports = class AgendamentoController {
-
   static createReservas(req, res) {
     // Extrai os dados enviados no corpo da requisição
     const { fk_id_usuario, fk_id_sala, datahora_inicio, datahora_fim } =
       req.body;
 
-    // Validação inicial: verifica se todos os campos obrigatórios foram preenchidos
-    if (!fk_id_usuario || !fk_id_sala || !datahora_inicio || !datahora_fim) {
-      return res
-        .status(400)
-        .json({ error: "Todos os campos devem ser preenchidos" });
-    }
+      const validationError = validateReserva (req.body);
+      if (validationError) {
+        return res.status(400).json(validationError);
+      }
 
     // Consulta SQL para verificar se o usuário existe
     const queryUsuario = `SELECT * FROM usuario WHERE id_usuario = ?`;
@@ -75,7 +73,7 @@ module.exports = class AgendamentoController {
             return res.status(404).json({ error: "Sala não encontrada" });
           }
 
-          // Verifica se o horário solicitado está fora do horário permitido (8:00 - 21:00)
+          // Verifica se o horário solicitado está fora do horário permitido (7:00 - 21:00)
           const inicio = new Date(datahora_inicio).getHours();
           const fim = new Date(datahora_fim).getHours();
           if (inicio < 7 || inicio >= 21 || fim < 7 || fim >= 21) {
@@ -101,31 +99,6 @@ module.exports = class AgendamentoController {
               .json({ error: "A reserva deve ter exatamente 50 minutos" });
           }
 
-          // Se houver conflitos de horário, sugere o próximo horário disponível
-          if (resultadosH.length > 0) {
-            const reservasOrdenadas = resultadosH.sort(
-              (a, b) => new Date(a.datahora_fim) - new Date(b.datahora_fim)
-            );
-            const proximoHorarioInicio = new Date(
-              reservasOrdenadas[0].datahora_fim
-            );
-
-            proximoHorarioInicio.setHours(proximoHorarioInicio.getHours() - 3);
-            
-            const proximoHorarioFim = new Date(
-              proximoHorarioInicio.getTime() + limite
-            );
-
-            return res.status(400).json({
-              error: `A sala já está reservada neste horário. O próximo horário disponível é de ${proximoHorarioInicio
-                .toISOString()
-                .replace("T", " ")
-                .substring(0, 19)} até ${proximoHorarioFim
-                .toISOString()
-                .replace("T", " ")
-                .substring(0, 19)}`,
-            });
-          }
 
           // Insere a nova reserva no banco de dados
           const queryInsert = `
@@ -206,15 +179,6 @@ module.exports = class AgendamentoController {
       return res.status(400).json({
         error: "A data/hora de fim deve ser após a data/hora de início",
       });
-    }
-
-    const tempoReserva = fim - inicio;
-    const limiteReserva = 50 * 60 * 1000; // 50 minutos em milissegundos
-
-    if (tempoReserva !== limiteReserva) {
-      return res
-        .status(400)
-        .json({ error: "A reserva deve ter exatamente 50 minutos" });
     }
 
     // Consulta para obter o fk_id_sala com base no id_reserva

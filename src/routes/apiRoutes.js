@@ -1,7 +1,7 @@
 const router = require("express").Router();
 
 const reservaController = require("../controllers/reservaController");
-const usuarioController = require("../controllers/userController");
+
 const salaController = require("../controllers/salaController");
 const userController = require("../controllers/userController");
 

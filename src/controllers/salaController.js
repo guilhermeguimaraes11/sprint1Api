@@ -1,15 +1,14 @@
 const connect = require("../db/connect");
+const validateSala = require("../services/validateSala");
 
 module.exports = class salaController {
 
   static async createSalas(req, res) {
     const { nome, descricao, bloco, tipo, capacidade } = req.body;
 
-    // Valida se todos os campos obrigatórios estão preenchidos
-    if (!nome || !descricao || !bloco || !tipo || !capacidade) {
-      return res
-        .status(400)
-        .json({ error: "Todos os campos devem ser preenchidos" });
+    const validationError = validateSala (req.body);
+    if (validationError) {
+      return res.status(400).json(validationError);
     }
 
     // Construção da query INSERT para adicionar o usuário ao banco de dados

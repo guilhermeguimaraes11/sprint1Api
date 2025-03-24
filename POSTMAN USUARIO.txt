@@ -1,0 +1,85 @@
+GET DO USUARIO:
+curl --location 'http://localhost:5000/reservas/v1/user'
+
+POST DO USUARIO:
+curl --location 'http://localhost:5000/reservas/v1/user' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+            "id_usuario": 21,
+            "nomecompleto": "Guilherme Guimarães",
+            "email": "gui.guimaraes@example.com",
+            "cpf": "11111111111",
+            "senha": "senha123"
+        }'
+
+PUT DO USUARIO:
+curl --location --request PUT 'http://localhost:5000/reservas/v1/user/41' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+            "id_usuario": 21,
+            "nomecompleto": "Guilherme Guimarães",
+            "email": "gui.guimaraes11@example.com",
+            "cpf": "11111111111",
+            "senha": "senha123"
+        }'
+DELETE DO USUARIO: 
+curl --location --request DELETE 'http://localhost:5000/reservas/v1/user/41' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+            "id_usuario": 21,
+            "nomecompleto": "Guilherme Guimarães",
+            "email": "gui.guimaraes11@example.com",
+            "cpf": "11111111111",
+            "senha": "senha123"
+        }'
+
+VALIDATE POST:
+curl --location 'http://localhost:5000/reservas/v1/user/' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+            "id_usuario": 21,
+            "nomecompleto": "",
+            "email": "gui.guimaraes11@example.com",
+            "cpf": "11111111111",
+            "senha": "senha123"
+        }'
+VALIDATE POST CPF INVALIDO:
+curl --location 'http://localhost:5000/reservas/v1/user/' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+            "id_usuario": 21,
+            "nomecompleto": "Guilherme Guimarães",
+            "email": "gui.guimaraes11@example.com",
+            "cpf": "1111111111",
+            "senha": "senha123"
+        }'
+VALIDATE POST @ INVALIDO:
+curl --location 'http://localhost:5000/reservas/v1/user/' \
+--header 'Content-Type: application/json' \
+--data '{
+            "id_usuario": 21,
+            "nomecompleto": "Guilherme Guimarães",
+            "email": "gui.guimaraes11example.com",
+            "cpf": "11111111111",
+            "senha": "senha123"
+        }'
+VALIDATE POST NOME COM CARACTERES INVALIDO:
+curl --location 'http://localhost:5000/reservas/v1/user/' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+            "id_usuario": 21,
+            "nomecompleto": "G",
+            "email": "gui.guimaraes11@example.com",
+            "cpf": "11111111111",
+            "senha": "senha123"
+        }'
+VALIDATE COM SENHA INVALIDA:
+curl --location 'http://localhost:5000/reservas/v1/user/' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+            "id_usuario": 21,
+            "nomecompleto": "Guilherme silva",
+            "email": "gui.guimaraes12@example.com",
+            "cpf": "11111111111",
+            "senha": "senha"
+        }'

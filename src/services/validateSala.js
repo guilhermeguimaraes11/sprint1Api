@@ -5,10 +5,13 @@ module.exports = function validateSala({
   tipo,
   capacidade
 }) {
-  if (!nome || !descricao || !bloco || !tipo || !capacidade ) {
-    return { error: "Todos os campos devem ser preenchidos" };
+   // Valida se todos os campos obrigatórios estão preenchidos
+   if (!nome || !descricao || !bloco || !tipo || !capacidade) {
+    return res
+      .status(400)
+      .json({ error: "Todos os campos devem ser preenchidos" });
   }
-
+  
   if (isNaN(capacidade) || capacidade.length !== 40) {
     return {
       error: "Capacidade máxima atingida. Deve conter no máximo 40 alunos",
