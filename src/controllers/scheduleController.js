@@ -1,4 +1,5 @@
 const connect = require("../db/connect");
+const validateSchudule = require("../services/validateSchedule")
 
 // Verificar se o horário de início de um agendamento está dentro de um intervalo de tempo
 function isInTimeRange(horario_inicio, timeRange) {
