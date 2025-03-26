@@ -6,7 +6,7 @@ module.exports = class salaController {
   static async createSalas(req, res) {
     const { nome, descricao, bloco, tipo, capacidade } = req.body;
 
-    const validationError = validateSala (req.body);
+    const validationError = validateSala(req.body);
     if (validationError) {
       return res.status(400).json(validationError);
     }

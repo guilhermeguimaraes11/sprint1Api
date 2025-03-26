@@ -1,21 +1,14 @@
 const router = require("express").Router();
 
-const reservaController = require("../controllers/reservaController");
-
 const salaController = require("../controllers/salaController");
 const userController = require("../controllers/userController");
+const scheduleController = require("../controllers/scheduleController")
 
 router.post("/user", userController.createUser);
 router.post("/login", userController.loginUser);
 router.get("/user", userController.getAllUsers);
 router.put("/user/:id_usuario", userController.updateUser);
 router.delete("/user/:id_usuario", userController.deleteUser);
-
-router.get("/reserva", reservaController.createReservas);
-router.post("/reserva", reservaController.createReservas);
-router.get("/reservas", reservaController.getAllReservas);
-router.put("/reserva/:id_reserva", reservaController.updateReserva);
-router.delete("/reserva/:id_reserva", reservaController.deleteReserva);
 
 router.post("/sala", salaController.createSalas);
 router.get("/salas", salaController.getAllSalasTabela);
@@ -26,6 +19,10 @@ router.get("/salasdisponivelhorario", salaController.getSalasDisponiveisHorario)
 router.get("/salasdisponiveldata", salaController.getSalasDisponiveisData);
 router.get("/salasdisponiveis", salaController.getSalasDisponiveis);
 
+router.post("/reservaschedule", scheduleController.createreserva_sala)
+router.get("/reservaschedule", scheduleController.getAllreserva_salas);
+router.delete("/reservaschedule/:id_reserva", scheduleController.deletereserva_sala);
+
 module.exports = router;
 
-//Exportândo a instância de express configurada, para que seja acessada em outros arquivos
+//Exportando a instância de express configurada, para que seja acessada em outros arquivos
