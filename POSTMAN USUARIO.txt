@@ -2,10 +2,9 @@ GET DO USUARIO:
 curl --location 'http://localhost:5000/reservas/v1/user'
 
 POST DO USUARIO:
-curl --location 'http://localhost:5000/reservas/v1/user' \
+curl --location 'http://10.89.240.70:5000/reservas/v1/user' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-            "id_usuario": 21,
             "nomecompleto": "Guilherme Guimarães",
             "email": "gui.guimaraes@example.com",
             "cpf": "11111111111",
