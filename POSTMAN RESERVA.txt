@@ -1,0 +1,19 @@
+GET RESERVA:
+curl --location 'http://localhost:5000/reservas/v1/reservaschedule' \
+--data ''
+
+GET POST:
+curl --location 'http://localhost:5000/reservas/v1/reservaschedule' \
+--header 'Content-Type: application/json' \
+--data '
+{
+    "data":"2025-10-17",
+    "horario_inicio": "10:20:00",
+    "horario_fim": "11:20:00",
+    "fk_id_sala": 3,
+    "fk_id_usuario": 3
+}'
+
+DELETE RESERVA:
+curl --location --request DELETE 'http://localhost:5000/reservas/v1/reservaschedule/1' \
+--data ''

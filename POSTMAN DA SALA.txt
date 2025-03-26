@@ -1,0 +1,61 @@
+GET SALAS:
+curl --location 'http://localhost:5000/reservas/v1/salas'
+
+POST SALA:
+curl --location 'http://localhost:5000/reservas/v1/sala' \
+--header 'Content-Type: application/json' \
+--data '{
+            "nome": "Sala de música",
+            "descricao": "Instrumentos musicais para os alunos aperfeiçoarem seus dons.",
+            "bloco": "M",
+            "tipo": "Musical",
+            "capacidade":11
+        }'
+
+PUT SALAS: 
+curl --location --request PUT 'http://localhost:5000/reservas/v1/sala/52' \
+--header 'Content-Type: application/json' \
+--data '{
+            "nome": "Auditório",
+            "descricao": "Um auditório é um espaço projetado para eventos como palestras, apresentações e shows, com uma grande capacidade de assentos voltados para um palco ou área central",
+            "bloco": "T",
+            "tipo": "Auditório",
+            "capacidade":111
+        }'
+
+DELETE SALAS:
+
+
+VALIDATE SALA:
+curl --location 'http://localhost:5000/reservas/v1/sala' \
+--header 'Content-Type: application/json' \
+--data '{
+            "nome": "",
+            "descricao": "  ",
+            "bloco": "",
+            "tipo": "  ",
+            "capacidade":15
+
+        }'
+VALIDATE SALA:
+curl --location 'http://localhost:5000/reservas/v1/sala' \
+--header 'Content-Type: application/json' \
+--data '{
+            "nome": "Desenvolvimento de Sistema",
+            "descricao": "Programação ",
+            "bloco": "D",
+            "tipo": "T.I ",
+            "capacidade":201
+
+        }'
+VALIDATE SALA:
+curl --location 'http://localhost:5000/reservas/v1/sala' \
+--header 'Content-Type: application/json' \
+--data '{
+            "nome": "Eletroeletronica",
+            "descricao": "A Eletroeletrônica é a área que estuda e desenvolve sistemas e dispositivos que integram eletricidade e eletrônica, como circuitos, automação e comunicação, aplicados em tecnologias como computadores, celulares e sistemas industriais. ",
+            "bloco": "DD",
+            "tipo": "Oficina ",
+            "capacidade":40
+
+        }'
