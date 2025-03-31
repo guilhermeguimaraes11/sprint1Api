@@ -17,3 +17,27 @@ curl --location 'http://localhost:5000/reservas/v1/reservaschedule' \
 DELETE RESERVA:
 curl --location --request DELETE 'http://localhost:5000/reservas/v1/reservaschedule/1' \
 --data ''
+
+VALIDATE RESERVA:
+curl --location 'http://localhost:5000/reservas/v1/reservaschedule' \
+--header 'Content-Type: application/json' \
+--data '
+{
+    "data":"2025-03-31",
+    "horario_inicio": "06:00:00",
+    "horario_fim": "11:20:00",
+    "fk_id_sala": "",
+    "fk_id_usuario": 3
+}'
+
+VALIDATE RESERVA:
+curl --location 'http://localhost:5000/reservas/v1/reservaschedule' \
+--header 'Content-Type: application/json' \
+--data '
+{
+    "data":"2025-03-31",
+    "horario_inicio": "06:00:00",
+    "horario_fim": "11:20:00",
+    "fk_id_sala": "1",
+    "fk_id_usuario": 3
+}'

@@ -1,5 +1,5 @@
 const connect = require("../db/connect");
-const validateSchudule = require("../services/validateSchedule")
+const validateSchedule = require("../services/validateSchedule")
 
 // Verificar se o horário de início de um agendamento está dentro de um intervalo de tempo
 function isInTimeRange(horario_inicio, timeRange) {
@@ -14,35 +14,12 @@ module.exports = class reserva_salaController {
   static async createreserva_sala(req, res) {
     const { data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario } =
       req.body;
-    console.log(req.body);
-    // Verificar se todos os campos estão preenchidos
-    if (
-      !data ||
-      !horario_inicio ||
-      !horario_fim ||
-      !fk_id_sala ||
-      !fk_id_usuario
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Todos os campos devem ser preenchidos" });
+
+    const validationError = validateSchedule (req.body);
+    if (validationError) {
+      return res.status(400).json(validationError);
     }
-
-    // Verificar se o tempo está dentro do intervalo permitido
-    const isWithinTimeRange = (time) => {
-      const [hours, minutes] = time.split(":").map(Number);
-      const totalMinutes = hours * 60 + minutes;
-      return totalMinutes >= 7.5 * 60 && totalMinutes <= 23 * 60;
-    };
-
-    // Verificar se o tempo de início e término está dentro do intervalo permitido
-    if (!isWithinTimeRange(horario_inicio) || !isWithinTimeRange(horario_fim)) {
-      return res.status(400).json({
-        error:
-          "A sala de aula só pode ser reservada dentro do intervalo de 7:30 às 23:00",
-      });
-    }
-
+  
     try {
         const overlapQuery = `
         SELECT * FROM reserva_sala
@@ -115,8 +92,6 @@ module.exports = class reserva_salaController {
     WHERE fk_id_sala = '${fk_id_salaID}'
     AND (data <= '${weekEnd}' AND horario_fim >= '${weekStart}')
 `;
-
-
 
     try {
       // Executa a consulta

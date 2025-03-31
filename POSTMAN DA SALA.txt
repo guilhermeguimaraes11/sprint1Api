@@ -13,7 +13,7 @@ curl --location 'http://localhost:5000/reservas/v1/sala' \
         }'
 
 PUT SALAS: 
-curl --location --request PUT 'http://localhost:5000/reservas/v1/sala/52' \
+curl --location --request PUT 'http://localhost:5000/reservas/v1/sala/21' \
 --header 'Content-Type: application/json' \
 --data '{
             "nome": "Auditório",
@@ -24,7 +24,15 @@ curl --location --request PUT 'http://localhost:5000/reservas/v1/sala/52' \
         }'
 
 DELETE SALAS:
-
+curl --location --request DELETE 'http://localhost:5000/reservas/v1/sala/21' \
+--header 'Content-Type: application/json' \
+--data '{
+            "nome": "Auditório",
+            "descricao": "Um auditório é um espaço projetado para eventos como palestras, apresentações e shows, com uma grande capacidade de assentos voltados para um palco ou área central",
+            "bloco": "T",
+            "tipo": "Auditório",
+            "capacidade":111
+        }'
 
 VALIDATE SALA:
 curl --location 'http://localhost:5000/reservas/v1/sala' \
