@@ -1,5 +1,5 @@
-CREATE DATABASE reserva_senaiteste;
-USE reserva_senaiteste;
+CREATE DATABASE reserva_senait;
+USE reserva_senai;
 
 CREATE TABLE usuario(
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
