@@ -1,4 +1,4 @@
-CREATE DATABASE reserva_senait;
+CREATE DATABASE reserva_senai;
 USE reserva_senai;
 
 CREATE TABLE usuario(
