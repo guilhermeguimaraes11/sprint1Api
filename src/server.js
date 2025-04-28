@@ -1,5 +1,7 @@
 const app = require("./index");
 const cors = require("cors");
+require('dotenv').config();
+
 
 const corsOptions = {
     origin: '*', // qual o ip vai poder usar esses métodos, '*' = todos

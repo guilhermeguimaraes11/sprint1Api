@@ -1,4 +1,11 @@
-const router = require("express").Router();
+const express = require('express');
+const router = express.Router();
+const verifyJWT = require('../services/verifyJWT');
+
+// Rota protegida
+router.get('/protegido', verifyJWT, (req, res) => {
+    res.json({ message: `Você acessou uma rota protegida! Seu ID: ${req.userId}` });
+  });
 
 // Controllers
 const salaController = require("../controllers/salaController");
@@ -8,9 +15,9 @@ const scheduleController = require("../controllers/scheduleController");
 // Rotas de Usuário
 router.post("/user", userController.createUser); // Cadastrar usuário
 router.post("/login", userController.loginUser); // Login de usuário
-router.get("/user", userController.getAllUsers); // Listar todos usuários
-router.put("/user/:id_usuario", userController.updateUser); // Atualizar usuário
-router.delete("/user/:id_usuario", userController.deleteUser); // Deletar usuário
+router.get("/user", verifyJWT, userController.getAllUsers); // Listar todos usuários
+router.put("/user/:id_usuario", verifyJWT, userController.updateUser); // Atualizar usuário
+router.delete("/user/:id_usuario", verifyJWT, userController.deleteUser); // Deletar usuário
 
 // Rotas de Sala
 router.post("/sala", salaController.createSalas); // Cadastrar sala
