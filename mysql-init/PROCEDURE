@@ -1,0 +1,40 @@
+PROCEDURE PARA LISTAR AS RESERVAS DE UM USUÁRIO
+
+-- Descrição: Esta procedure lista todas as reservas feitas por um usuário específico em uma data específica.
+-- Parâmetros:
+--    p_usuario (INT): ID do usuário cujas reservas devem ser listadas.
+--    p_data (DATE): Data específica para filtrar as reservas.
+-- Retorno: Retorna uma lista com as reservas do usuário na data fornecida (id_reserva, horario_inicio, horario_fim).
+-----------------------------------------------------------------------------------------------------------------
+-- SELECT das reservas de todos os usuários	:
+SELECT fk_id_usuario, data, horario_inicio, horario_fim
+FROM reserva_sala
+ORDER BY fk_id_usuario, data;
+-----------------------------------------------------------------------------------------------------------------
+-- SELECT das reservas de todos os usuários em uma data específica:
+SELECT fk_id_usuario, data, horario_inicio, horario_fim
+FROM reserva_sala
+WHERE data = '2025-09-17'
+ORDER BY fk_id_usuario;
+-----------------------------------------------------------------------------------------------------------------
+-- DELIMITER // utilizado para criar a procedure, que pode ser chamada com CALL.
+DELIMITER //
+
+CREATE PROCEDURE listar_reservas_por_usuario(p_usuario INT, p_data DATE)
+BEGIN
+    -- Seleciona as reservas do usuário específico na data fornecida
+    SELECT id_reserva, horario_inicio, horario_fim
+    FROM reserva_sala
+    WHERE fk_id_usuario = p_usuario AND data = p_data
+    ORDER BY horario_inicio;
+END //
+
+DELIMITER ;
+-----------------------------------------------------------------------------------------------------------------
+-- Chamando a Procedure:
+-- Para listar as reservas do usuário 1 no dia 13 de novembro de 2024:
+CALL listar_reservas_por_usuario(1, '2024-11-13');
+
+-- Para listar as reservas do usuário 2 para o dia de hoje:
+CALL listar_reservas_por_usuario(2, CURDATE());
+-----------------------------------------------------------------------------------------------------------------

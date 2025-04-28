@@ -1,0 +1,46 @@
+FUNCTION HORAS RESERVADAS POR USUÁRIO
+
+-- Descrição: Esta função calcula o total de horas reservadas por um usuário em uma data específica.
+-- Parâmetros:
+--    p_usuario (INT): ID do usuário.
+--    p_data (DATE): Data específica para a qual se deseja calcular o total de horas reservadas.
+-- Retorno: Retorna o total de horas reservadas (inteiro). Caso não haja reservas, retorna 0.
+-----------------------------------------------------------------------------------------------------------------
+Select das reservas de todos os usuários:
+SELECT fk_id_usuario, data, horario_inicio, horario_fim
+FROM reserva_sala
+ORDER BY fk_id_usuario, data;
+-----------------------------------------------------------------------------------------------------------------
+Select das reservas apenas para um dia específico:
+SELECT fk_id_usuario, data, horario_inicio, horario_fim
+FROM reserva_sala
+WHERE data = '2024-11-12'
+ORDER BY fk_id_usuario;
+-----------------------------------------------------------------------------------------------------------------
+Select para um usuário específico:
+SELECT horas_reservadas_por_usuario(1, '2025-09-17') AS total_horas;
+-----------------------------------------------------------------------------------------------------------------
+DELIMITER //
+
+CREATE FUNCTION IF NOT EXISTS horas_reservadas_por_usuario(p_usuario INT, p_data DATE)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+  DECLARE total INT;
+
+  -- Calcula a soma das horas de todas as reservas feitas pelo usuário na data especificada
+  SELECT SUM(TIMESTAMPDIFF(HOUR, horario_inicio, horario_fim))
+  INTO total
+  FROM reserva_sala
+  WHERE fk_id_usuario = p_usuario AND data = p_data;
+
+  -- Retorna o total de horas ou 0 se não houver reservas
+  RETURN IFNULL(total, 0);
+END //
+
+DELIMITER ;
+
+
+
+
+
