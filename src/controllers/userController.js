@@ -155,8 +155,22 @@ module.exports = class userController {
           return res.status(401).json({ error: "Senha incorreta" });
         }
 
-        return res.status(200).json({ message: "Login bem-sucedido", user });
+        const token = jwt.sign({ id: user.id_usuario }, process.env.SECRET, {
+          expiresIn: "1h",
+        });
+
+        //(DELETE) Remove um atributo de um obj
+        delete user.password;
+
+        return res.status(200).json({
+          message: "Login bem-sucedido",
+          user,
+          token
+        })
+
+
       });
+      
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);
       return res.status(500).json({ error: "Erro interno do servidor" });
