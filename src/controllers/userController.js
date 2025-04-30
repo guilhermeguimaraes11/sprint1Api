@@ -1,5 +1,6 @@
 const connect = require("../db/connect");
 const validateUser  = require("../services/validateUser");
+const jwt = require("jsonwebtoken");
 
 module.exports = class userController {
   static async createUser (req, res) {
@@ -35,17 +36,20 @@ module.exports = class userController {
   }
   static async getAllUsers(req, res) {
     const query = `SELECT * FROM usuario`;
-
+  
     try {
+      // O middleware verifyJWT já verificará se o usuário está autenticado
+      if (!req.userId) {
+        return res.status(403).json({ error: "Acesso não autorizado" });
+      }
+  
       connect.query(query, function (err, results) {
         if (err) {
           console.error(err);
           return res.status(500).json({ error: "Erro interno do servidor" });
         }
-
-        return res
-          .status(200)
-          .json({ message: "Obtendo todos os usuários", users: results });
+  
+        return res.status(200).json({ message: "Obtendo todos os usuários", users: results });
       });
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);
@@ -55,11 +59,17 @@ module.exports = class userController {
   static async updateUser(req, res) {
     const { cpf, email, senha, nomecompleto } = req.body;
     const { id_usuario } = req.params;
+  
+    // Verifica se o usuário está autenticado e se está tentando atualizar seus próprios dados
+    if (id_usuario != req.userId) {
+      return res.status(403).json({ error: "Acesso não autorizado" });
+    }
+  
     const validationError = validateUser(req.body);
     if (validationError) {
       return res.status(400).json(validationError);
     }
-
+  
     try {
       const query =
         "UPDATE usuario SET cpf = ?, email = ?, senha = ?, nomecompleto = ? WHERE id_usuario = ?";
@@ -73,25 +83,28 @@ module.exports = class userController {
                 return res.status(400).json({ error: "Email já cadastrado" });
               }
             } else {
-              return res
-                .status(500)
-                .json({ error: "Erro interno do servidor", err });
+              return res.status(500).json({ error: "Erro interno do servidor", err });
             }
           }
           if (results.affectedRows === 0) {
             return res.status(404).json({ error: "Usuário não encontrado" });
           }
-          return res
-            .status(200)
-            .json({ message: "Usuário atualizado com sucesso" });
+          return res.status(200).json({ message: "Usuário atualizado com sucesso" });
         }
       );
     } catch (error) {
       return res.status(500).json({ error });
     }
   }
+  
   static async deleteUser(req, res) {
     const userId = req.params.id_usuario;
+  
+    // Verifica se o usuário está autenticado e se ele está tentando excluir sua própria conta
+    if (userId != req.userId) {
+      return res.status(403).json({ error: "Acesso não autorizado" });
+    }
+  
     const query = `DELETE FROM usuario WHERE id_usuario = ?`;
     const values = [userId];
   
@@ -99,10 +112,10 @@ module.exports = class userController {
       connect.query(query, values, function (err, results) {
         if (err) {
           // Verificando o erro específico de chave estrangeira
-          if (err.code === 'ER_ROW_IS_REFERENCED_2') {
-            console.error('Erro de chave estrangeira:', err);
+          if (err.code === "ER_ROW_IS_REFERENCED_2") {
+            console.error("Erro de chave estrangeira:", err);
             return res.status(400).json({
-              error: "Não é possível excluir este usuário, pois ele possuí uma reserva."
+              error: "Não é possível excluir este usuário, pois ele possui uma reserva.",
             });
           }
   
@@ -118,15 +131,15 @@ module.exports = class userController {
   
         // Sucesso ao excluir o usuário
         return res.status(200).json({
-          message: "Usuário excluído com ID: " + userId
+          message: "Usuário excluído com ID: " + userId,
         });
       });
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
-  
   }
+  
 
   // Método de Login - Implementar
   static async loginUser(req, res) {
@@ -156,21 +169,18 @@ module.exports = class userController {
         }
 
         const token = jwt.sign({ id: user.id_usuario }, process.env.SECRET, {
-          expiresIn: "1h",
+          expiresIn: "1h", 
         });
-
-        //(DELETE) Remove um atributo de um obj
+  
+        // remove a senha do retorno
         delete user.password;
 
         return res.status(200).json({
           message: "Login bem-sucedido",
           user,
-          token
-        })
-
-
+          token,
+        });
       });
-      
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);
       return res.status(500).json({ error: "Erro interno do servidor" });
