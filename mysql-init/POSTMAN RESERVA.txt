@@ -2,7 +2,7 @@ GET RESERVA:
 curl --location 'http://10.89.240.70:5000/reservas/v1/reservaschedule' \
 --data ''
 
-GET POST:
+POST RESERVA:
 curl --location 'http://10.89.240.70:5000/reservas/v1/reservaschedule' \
 --header 'Content-Type: application/json' \
 --data '

@@ -260,49 +260,41 @@ module.exports = class salaController {
   }
 
   static async getSalasDisponiveis(req, res) {
-    // Consultas SQL para obter as salas reservadas e todas as salas
-    const queryReserva = `SELECT fk_id_sala FROM reserva`;
+    const queryReserva = `SELECT fk_id_sala FROM reserva_sala`; // <- corrigido aqui
     const querySala = `SELECT id_sala FROM sala`;
-
+  
     try {
-      // Realizando as consultas no banco de dados
       connect.query(querySala, (err, salasDisponiveisRows) => {
         if (err) {
-          console.error(err);
+          console.error("Erro ao buscar todas as salas:", err);
           return res
             .status(500)
-            .json({ message: "Erro ao obter as salas reservadas" });
+            .json({ message: "Erro ao obter todas as salas", error: err });
         }
-
+  
         connect.query(queryReserva, (err, salasReservadasRows) => {
           if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Erro ao obter as salas " });
+            console.error("Erro ao buscar reservas:", err);
+            return res.status(500).json({ message: "Erro ao obter as reservas", error: err });
           }
-
-          // Extraindo os IDs das salas reservadas e todas as salas
-          const salasDisponiveis = salasDisponiveisRows.map(
-            (row) => row.id_sala
-          );
-          const salasReservadas = salasReservadasRows.map(
-            (row) => row.fk_id_sala
-          );
-
-          // Filtrando as salas disponiveis
+  
+          const salasDisponiveis = salasDisponiveisRows.map((row) => row.id_sala);
+          const salasReservadas = salasReservadasRows.map((row) => row.fk_id_sala);
+  
           const salasSomenteDisponiveis = salasDisponiveis.filter(
             (sala) => !salasReservadas.includes(sala)
           );
-
+  
           const salasOrdenadas = salasSomenteDisponiveis.sort((a, b) => a - b);
-          // Enviando a resposta
-          res.status(200).json(salasOrdenadas);
+          return res.status(200).json(salasOrdenadas);
         });
       });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Erro ao obter as salas" });
+      console.error("Erro geral ao processar rota de salas disponíveis:", error);
+      return res.status(500).json({ message: "Erro ao obter as salas", error: error });
     }
   }
+  
 
   static async updateSala(req, res) {
     const { nome, descricao, bloco, tipo, capacidade } = req.body;

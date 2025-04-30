@@ -1,5 +1,5 @@
 const connect = require("../db/connect");
-const validateSchedule = require("../services/validateSchedule")
+const validateSchedule = require("../services/validateSchedule");
 
 // Verificar se o horário de início de um agendamento está dentro de um intervalo de tempo
 function isInTimeRange(horario_inicio, timeRange) {
@@ -15,13 +15,13 @@ module.exports = class reserva_salaController {
     const { data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario } =
       req.body;
 
-    const validationError = validateSchedule (req.body);
+    const validationError = validateSchedule(req.body);
     if (validationError) {
       return res.status(400).json(validationError);
     }
-  
+
     try {
-        const overlapQuery = `
+      const overlapQuery = `
         SELECT * FROM reserva_sala
         WHERE 
             fk_id_sala = '${fk_id_sala}'
@@ -30,7 +30,6 @@ module.exports = class reserva_salaController {
                 (horario_inicio < '${horario_fim}' AND horario_fim > '${horario_inicio}')
             )
         `;
-    
 
       connect.query(overlapQuery, function (err, results) {
         if (err) {
@@ -38,6 +37,15 @@ module.exports = class reserva_salaController {
           return res
             .status(500)
             .json({ error: "Erro ao verificar agendamento existente" });
+        }
+
+        const currentDate = new Date();
+        const dataAgendamento = new Date(data);
+
+        if (dataAgendamento < currentDate) {
+          return res.status(400).json({
+            error: "Reservas só podem ser feitas a partir do dia atual.",
+          });
         }
 
         // Se a consulta retornar algum resultado, significa que já existe um agendamento
@@ -83,7 +91,7 @@ module.exports = class reserva_salaController {
   static async getreserva_salasByIdfk_id_salaRanges(req, res) {
     const fk_id_salaID = req.params.id;
     const { weekStart, weekEnd } = req.query; // Variavel para armazenar a semana selecionada
-    console.log(weekStart+' '+weekEnd)
+    console.log(weekStart + " " + weekEnd);
     // Consulta SQL para obter todos os agendamentos para uma determinada sala de aula
     const query = `
     SELECT reserva_sala.*, usuario.nomecompleto AS userName
@@ -160,7 +168,9 @@ module.exports = class reserva_salaController {
           days.forEach((day) => {
             timeRanges.forEach((timeRange) => {
               if (isInTimeRange(reserva_sala.horario_inicio, timeRange)) {
-                reserva_salasByDayAndTimeRange[day][timeRange].push(reserva_sala);
+                reserva_salasByDayAndTimeRange[day][timeRange].push(
+                  reserva_sala
+                );
               }
             });
           });
@@ -168,13 +178,19 @@ module.exports = class reserva_salaController {
 
         // Ordena os agendamentos dentro de cada lista com base no horario_inicio
         Object.keys(reserva_salasByDayAndTimeRange).forEach((day) => {
-          Object.keys(reserva_salasByDayAndTimeRange[day]).forEach((timeRange) => {
-            reserva_salasByDayAndTimeRange[day][timeRange].sort((a, b) => {
-              const horario_inicioA = new Date(`1970-01-01T${a.horario_inicio}`);
-              const horario_inicioB = new Date(`1970-01-01T${b.horario_inicio}`);
-              return horario_inicioA - horario_inicioB;
-            });
-          });
+          Object.keys(reserva_salasByDayAndTimeRange[day]).forEach(
+            (timeRange) => {
+              reserva_salasByDayAndTimeRange[day][timeRange].sort((a, b) => {
+                const horario_inicioA = new Date(
+                  `1970-01-01T${a.horario_inicio}`
+                );
+                const horario_inicioB = new Date(
+                  `1970-01-01T${b.horario_inicio}`
+                );
+                return horario_inicioA - horario_inicioB;
+              });
+            }
+          );
         });
 
         // Retorna os agendamentos organizados por dia da semana e intervalo de horário
@@ -248,15 +264,15 @@ module.exports = class reserva_salaController {
         FROM reserva_sala
         JOIN usuario ON reserva_sala.fk_id_usuario = usuario.id_usuario
         `;
-;
-
       connect.query(query, function (err, results) {
         if (err) {
           console.error(err);
           return res.status(500).json({ error: "Erro interno do servidor" });
         }
         // Retorna os agendamentos organizados por dia da semana e ordenados por horario_inicio
-        return res.status(200).json({ message: "Consulta das reservas: ", reserva_sala: results });
+        return res
+          .status(200)
+          .json({ message: "Consulta das reservas: ", reserva_sala: results });
       });
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);

@@ -18,7 +18,7 @@ WHERE data = '2024-11-12'
 ORDER BY fk_id_usuario;
 -----------------------------------------------------------------------------------------------------------------
 Select para um usuário específico:
-SELECT horas_reservadas_por_usuario(1, '2025-09-17') AS total_horas;
+  SELECT horas_reservadas_por_usuario(4, '2024-11-13') AS total_horas;
 -----------------------------------------------------------------------------------------------------------------
 DELIMITER //
 

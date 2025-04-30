@@ -1,5 +1,5 @@
 GET SALAS:
-curl --location 'http://10.89.240.70:5000/reservas/v1/salas'
+curl --location 'http://10.89.240.70:5000/reservas/v1/salasdisponiveis'
 
 POST SALA:
 curl --location 'http://10.89.240.70:5000/reservas/v1/sala' \

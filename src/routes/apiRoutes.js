@@ -16,22 +16,22 @@ router.delete("/user/:id_usuario", verifyJWT, userController.deleteUser); // Del
 
 
 // Rotas de Sala
-router.post("/sala", verifyJWT, salaController.createSalas); // Cadastrar sala - ** protegida**
-router.get("/salas", verifyJWT, salaController.getAllSalasTabela); // Listar todas as salas - ** protegida**
-router.put("/sala/:id_sala", verifyJWT, salaController.updateSala); // Atualizar sala - **protegida**
-router.delete("/sala/:id_sala", verifyJWT, salaController.deleteSala); // Deletar sala - **protegida**
+router.post("/sala", salaController.createSalas); // Cadastrar sala - ** protegida**
+router.get("/salas", salaController.getAllSalasTabela); // Listar todas as salas - ** protegida**
+router.put("/sala/:id_sala",  salaController.updateSala); // Atualizar sala - **protegida**
+router.delete("/sala/:id_sala",  salaController.deleteSala); // Deletar sala - **protegida**
 
 
 // Consultas de Disponibilidade de Sala
-router.get("/salasdisponivelhorario", verifyJWT, salaController.getSalasDisponiveisHorario); // Verificar disponibilidade por horário - ** protegida**
-router.get("/salasdisponiveldata", verifyJWT, salaController.getSalasDisponiveisData); // Verificar disponibilidade por data - ** protegida**
-router.get("/salasdisponiveis", verifyJWT, salaController.getSalasDisponiveis); // Ver todas salas disponíveis - **protegida**
+router.get("/salasdisponivelhorario",  salaController.getSalasDisponiveisHorario); // Verificar disponibilidade por horário - ** protegida**
+router.get("/salasdisponiveldata",  salaController.getSalasDisponiveisData); // Verificar disponibilidade por data - ** protegida**
+router.get("/salasdisponiveis",  salaController.getSalasDisponiveis); // Ver todas salas disponíveis - **protegida**
 
 
 // Rotas de Reserva de Sala
-router.post("/reservaschedule", verifyJWT, scheduleController.createreserva_sala); // Criar reserva - **protegida**
-router.get("/reservaschedule", verifyJWT, scheduleController.getAllreserva_salas); // Listar todas reservas - **protegida**
-router.delete("/reservaschedule/:id_reserva", verifyJWT, scheduleController.deletereserva_sala); // Deletar reserva - **protegida**
+router.post("/reservaschedule", scheduleController.createreserva_sala); // Criar reserva - **protegida**
+router.get("/reservaschedule", scheduleController.getAllreserva_salas); // Listar todas reservas - **protegida**
+router.delete("/reservaschedule/:id_reserva", scheduleController.deletereserva_sala); // Deletar reserva - **protegida**
 
 
 // Exportando a instância de express configurada
