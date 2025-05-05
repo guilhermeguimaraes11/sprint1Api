@@ -12,84 +12,77 @@ function isInTimeRange(horario_inicio, timeRange) {
 
 module.exports = class reserva_salaController {
   static async createreserva_sala(req, res) {
-    const { data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario } =
-      req.body;
-
-    const validationError = validateSchedule(req.body);
-    if (validationError) {
-      return res.status(400).json(validationError);
-    }
-
+    const { data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario } = req.body;
+  
     try {
+      const now = new Date();
+      const [year, month, day] = data.split("-").map(Number);
+      const [startHour, startMinute] = horario_inicio.split(":").map(Number);
+      const dataHoraAgendamento = new Date(year, month - 1, day, startHour, startMinute);
+  
+      if (dataHoraAgendamento < now) {
+        return res.status(400).json({
+          error: "Não é possível reservar para um horário que já passou.",
+        });
+      }
+  
+      // Verificação de conflito
       const overlapQuery = `
-        SELECT * FROM reserva_sala
-        WHERE 
-            fk_id_sala = '${fk_id_sala}'
-            AND data = '${data}'
-            AND (
-                (horario_inicio < '${horario_fim}' AND horario_fim > '${horario_inicio}')
-            )
-        `;
-
-      connect.query(overlapQuery, function (err, results) {
-        if (err) {
-          console.log(err);
-          return res
-            .status(500)
-            .json({ error: "Erro ao verificar agendamento existente" });
-        }
-
-        const now = new Date();
-        const [year, month, day] = data.split("-").map(Number);
-        const [startHour, startMinute] = horario_inicio.split(":").map(Number);
-
-        // Cria um objeto de data com a data e o horário da reserva no fuso local
-        const dataHoraAgendamento = new Date(
-          year,
-          month - 1,
-          day,
-          startHour,
-          startMinute
-        );
-
-        // Agora compara com o momento atual
-        if (dataHoraAgendamento < now) {
-          return res.status(400).json({
-            error: "Não é possível reservar para um horário que já passou.",
-          });
-        }
-
-        // Caso contrário, prossegue com a inserção na tabela
-        const insertQuery = `
-                INSERT INTO reserva_sala (data, fk_id_sala, horario_inicio, horario_fim, fk_id_usuario)
-                VALUES (
-                    '${data}',
-                    '${fk_id_sala}',
-                    '${horario_inicio}',
-                    '${horario_fim}',
-                    '${fk_id_usuario}'
-                )
-            `;
-
-        // Executa a consulta de inserção
-        connect.query(insertQuery, function (err) {
+        SELECT 1 FROM reserva_sala
+        WHERE fk_id_sala = ?
+          AND data = ?
+          AND (
+            (horario_inicio < ? AND horario_fim > ?)  -- sobreposição
+          )
+        LIMIT 1
+      `;
+  
+      connect.query(
+        overlapQuery,
+        [fk_id_sala, data, horario_fim, horario_inicio],
+        function (err, results) {
           if (err) {
             console.log(err);
             return res
               .status(500)
-              .json({ error: "Erro ao cadastrar agendamento" });
+              .json({ error: "Erro ao verificar agendamento existente" });
           }
-          console.log("Agendamento cadastrado com sucesso");
-          return res
-            .status(201)
-            .json({ message: "Agendamento cadastrado com sucesso" });
-        });
-      });
+  
+          if (results.length > 0) {
+            return res
+              .status(409)
+              .json({ error: "Já existe uma reserva nesse horário para esta sala." });
+          }
+  
+          // Inserção da reserva
+          const insertQuery = `
+            INSERT INTO reserva_sala (data, fk_id_sala, horario_inicio, horario_fim, fk_id_usuario)
+            VALUES (?, ?, ?, ?, ?)
+          `;
+  
+          connect.query(
+            insertQuery,
+            [data, fk_id_sala, horario_inicio, horario_fim, fk_id_usuario],
+            function (err) {
+              if (err) {
+                console.log(err);
+                return res
+                  .status(500)
+                  .json({ error: "Erro ao cadastrar agendamento" });
+              }
+              return res
+                .status(201)
+                .json({ message: "Agendamento cadastrado com sucesso" });
+            }
+          );
+        }
+      );
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);
       res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
+  
 
   static async getreserva_salasByIdfk_id_salaRanges(req, res) {
     const fk_id_salaID = req.params.id;
@@ -283,6 +276,95 @@ module.exports = class reserva_salaController {
     }
   }
 
+  static async getAvailability(req, res) {
+    const { fk_id_sala, data_inicio, data_fim } = req.body;
+
+    if (!fk_id_sala || !data_inicio || !data_fim) {
+      return res.status(400).json({
+        error: "Campos 'fk_id_sala', 'data_inicio' e 'data_fim' são obrigatórios.",
+      });
+    }
+
+    const intervalosPadrao = [
+      "07:30 - 09:30",
+      "09:30 - 11:30",
+      "12:30 - 15:30",
+      "15:30 - 17:30",
+      "19:00 - 22:00",
+    ];
+
+    try {
+      const query = `
+        SELECT data, horario_inicio, horario_fim 
+        FROM reserva_sala 
+        WHERE fk_id_sala = ? AND data BETWEEN ? AND ?
+      `;
+
+      connect.query(query, [fk_id_sala, data_inicio, data_fim], (err, reservas) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: "Erro ao buscar reservas." });
+        }
+
+        // Agrupa reservas por data
+        const reservasPorData = {};
+        reservas.forEach((res) => {
+          const dataFormatada = res.data.toISOString().split("T")[0];
+          if (!reservasPorData[dataFormatada]) reservasPorData[dataFormatada] = [];
+          reservasPorData[dataFormatada].push({
+            inicio: res.horario_inicio,
+            fim: res.horario_fim,
+          });
+        });
+
+        // Gera as datas entre o intervalo
+        const dias = [];
+        let atual = new Date(data_inicio);
+        const fim = new Date(data_fim);
+        while (atual <= fim) {
+          dias.push(atual.toISOString().split("T")[0]);
+          atual.setDate(atual.getDate() + 1);
+        }
+
+        // Monta a disponibilidade
+        const disponibilidade = dias.map((data) => {
+          const reservasDoDia = reservasPorData[data] || [];
+
+          const disponiveis = intervalosPadrao.filter((intervalo) => {
+            const [start, end] = intervalo.split(" - ");
+            const [startH, startM] = start.split(":").map(Number);
+            const [endH, endM] = end.split(":").map(Number);
+            const intervaloInicio = startH * 60 + startM;
+            const intervaloFim = endH * 60 + endM;
+
+            return !reservasDoDia.some((res) => {
+              const [resStartH, resStartM] = res.inicio.split(":").map(Number);
+              const [resEndH, resEndM] = res.fim.split(":").map(Number);
+              const resInicio = resStartH * 60 + resStartM;
+              const resFim = resEndH * 60 + resEndM;
+
+              // Conflito se a reserva existente começa antes do fim do novo
+              // e termina depois do início do novo
+              return resInicio < intervaloFim && resFim > intervaloInicio;
+            });
+          });
+
+          return {
+            data,
+            horarios_disponiveis: disponiveis,
+          };
+        });
+
+        return res.status(200).json({ disponibilidade });
+      });
+    } catch (error) {
+      console.error("Erro geral:", error);
+      return res.status(500).json({ error: "Erro interno ao verificar disponibilidade." });
+    }
+  }
+
+  
+
   static async deletereserva_sala(req, res) {
     const reserva_salaId = req.params.id_reserva;
     const query = `DELETE FROM reserva_sala WHERE id_reserva = ?`;
@@ -294,14 +376,7 @@ module.exports = class reserva_salaController {
           console.error(err);
           return res.status(500).json({ error: "Erro interno do servidor" });
         }
-
-        if (results.affectedRows === 0) {
-          return res.status(404).json({ error: "Agendamento não encontrado" });
-        }
-
-        return res
-          .status(200)
-          .json({ message: "Agendamento excluído com ID: " + reserva_salaId });
+        return res.status(200).json({ message: "Reserva cancelada com sucesso!" });
       });
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);
