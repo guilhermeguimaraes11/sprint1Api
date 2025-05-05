@@ -39,8 +39,3 @@ BEGIN
 END //
 
 DELIMITER ;
-
-
-
-
-

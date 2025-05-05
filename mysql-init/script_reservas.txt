@@ -52,6 +52,7 @@ INSERT INTO usuario (cpf, nomecompleto, email, senha) VALUES
 ('90123456780', 'Fábio Freitas', 'fabio.freitas@example.com', 'senha123'),
 ('01234567891', 'Isabela Cardoso', 'isabela.cardoso@example.com', 'senha123');
 
+
 -- Inserindo salas
 INSERT INTO sala (nome, descricao, bloco, tipo, capacidade) VALUES
 ('Sala de Reuniões 1', 'Sala de reuniões equipada para conferências', 'A', 'Sala', 20),

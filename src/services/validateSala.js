@@ -25,4 +25,3 @@ module.exports = function validateSala({
 
   return null; // Retorna null se não houver erro
 };
-

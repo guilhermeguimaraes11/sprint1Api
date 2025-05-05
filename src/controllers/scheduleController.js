@@ -39,20 +39,23 @@ module.exports = class reserva_salaController {
             .json({ error: "Erro ao verificar agendamento existente" });
         }
 
-        const currentDate = new Date();
-        const dataAgendamento = new Date(data);
+        const now = new Date();
+        const [year, month, day] = data.split("-").map(Number);
+        const [startHour, startMinute] = horario_inicio.split(":").map(Number);
 
-        if (dataAgendamento < currentDate) {
-          return res.status(400).json({
-            error: "Reservas só podem ser feitas a partir do dia atual.",
-          });
-        }
+        // Cria um objeto de data com a data e o horário da reserva no fuso local
+        const dataHoraAgendamento = new Date(
+          year,
+          month - 1,
+          day,
+          startHour,
+          startMinute
+        );
 
-        // Se a consulta retornar algum resultado, significa que já existe um agendamento
-        if (results.length > 0) {
+        // Agora compara com o momento atual
+        if (dataHoraAgendamento < now) {
           return res.status(400).json({
-            error:
-              "Já existe um agendamento para os mesmos dias, sala e horários",
+            error: "Não é possível reservar para um horário que já passou.",
           });
         }
 
