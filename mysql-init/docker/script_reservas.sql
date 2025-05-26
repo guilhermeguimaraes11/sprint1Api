@@ -1,3 +1,6 @@
+-- docker-compose up --build
+
+
 CREATE DATABASE reserva_senai;
 USE reserva_senai;
 
