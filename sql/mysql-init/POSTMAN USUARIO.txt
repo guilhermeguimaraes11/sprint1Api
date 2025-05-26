@@ -1,8 +1,8 @@
 GET DO USUARIO:
-curl --location 'http://10.89.240.70:5000/reservas/v1/user'
+curl --location 'http://10.89.240.72:5000/reservas/v1/user'
 
 POST DO USUARIO:
-curl --location 'http://10.89.240.70:5000/reservas/v1/user' \
+curl --location 'http://10.89.240.72:5000/reservas/v1/user' \
 --header 'Content-Type: application/json' \
 --data-raw '{
             "nomecompleto": "Guilherme Guimarães",
@@ -12,7 +12,7 @@ curl --location 'http://10.89.240.70:5000/reservas/v1/user' \
         }'
 
 PUT DO USUARIO:
-curl --location --request PUT 'http://10.89.240.70:5000/reservas/v1/user/21' \
+curl --location --request PUT 'http://10.89.240.72:5000/reservas/v1/user/21' \
 --header 'Content-Type: application/json' \
 --data-raw '{
             "id_usuario": 21,
@@ -22,7 +22,7 @@ curl --location --request PUT 'http://10.89.240.70:5000/reservas/v1/user/21' \
             "senha": "senha123"
         }'
 DELETE DO USUARIO: 
-curl --location --request DELETE 'http://10.89.240.70:5000/reservas/v1/user/21' \
+curl --location --request DELETE 'http://10.89.240.72:5000/reservas/v1/user/21' \
 --header 'Content-Type: application/json' \
 --data-raw '{
             "id_usuario": 21,
@@ -33,17 +33,17 @@ curl --location --request DELETE 'http://10.89.240.70:5000/reservas/v1/user/21' 
         }'
 
 VALIDATE POST:
-curl --location 'http://10.89.240.70:5000/reservas/v1/user/' \
+curl --location 'http://10.89.240.70:2000/reservas/v1/user/' \
 --header 'Content-Type: application/json' \
 --data-raw '{
             "id_usuario": 21,
-            "nomecompleto": "",
+            "nomecompleto":  "",
             "email": "gui.guimaraes11@example.com",
             "cpf": "11111111111",
             "senha": "senha123"
         }'
 VALIDATE POST CPF INVALIDO:
-curl --location 'http://10.89.240.70:5000/reservas/v1/user/' \
+curl --location 'http://10.89.240.72:5000/reservas/v1/user/' \
 --header 'Content-Type: application/json' \
 --data-raw '{
             "id_usuario": 21,
@@ -53,7 +53,7 @@ curl --location 'http://10.89.240.70:5000/reservas/v1/user/' \
             "senha": "senha123"
         }'
 VALIDATE POST @ INVALIDO:
-curl --location 'http://10.89.240.70:5000/reservas/v1/user/' \
+curl --location 'http://10.89.240.72:5000/reservas/v1/user/' \
 --header 'Content-Type: application/json' \
 --data '{
             "id_usuario": 21,
@@ -63,7 +63,7 @@ curl --location 'http://10.89.240.70:5000/reservas/v1/user/' \
             "senha": "senha123"
         }'
 VALIDATE POST NOME COM CARACTERES INVALIDO:
-curl --location 'http://10.89.240.70:5000/reservas/v1/user/' \
+curl --location 'http://10.89.240.72:5000/reservas/v1/user/' \
 --header 'Content-Type: application/json' \
 --data-raw '{
             "id_usuario": 21,
@@ -73,7 +73,7 @@ curl --location 'http://10.89.240.70:5000/reservas/v1/user/' \
             "senha": "senha123"
         }'
 VALIDATE COM SENHA INVALIDA:
-curl --location 'http://10.89.240.70:5000/reservas/v1/user/' \
+curl --location 'http://10.89.240.72:5000/reservas/v1/user/' \
 --header 'Content-Type: application/json' \
 --data-raw '{
             "id_usuario": 21,

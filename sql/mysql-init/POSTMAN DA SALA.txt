@@ -1,8 +1,8 @@
 GET SALAS:
-curl --location 'http://10.89.240.70:5000/reservas/v1/salasdisponiveis'
+curl --location 'http://10.89.240.72:5000/reservas/v1/salasdisponiveis'
 
 POST SALA:
-curl --location 'http://10.89.240.70:5000/reservas/v1/sala' \
+curl --location 'http://10.89.240.72:5000/reservas/v1/sala' \
 --header 'Content-Type: application/json' \
 --data '{
             "nome": "Sala de música",
@@ -13,7 +13,7 @@ curl --location 'http://10.89.240.70:5000/reservas/v1/sala' \
         }'
 
 PUT SALAS: 
-curl --location --request PUT 'http://10.89.240.70:5000/reservas/v1/sala/21' \
+curl --location --request PUT 'http://10.89.240.72:5000/reservas/v1/sala/21' \
 --header 'Content-Type: application/json' \
 --data '{
             "nome": "Auditório",
@@ -24,7 +24,7 @@ curl --location --request PUT 'http://10.89.240.70:5000/reservas/v1/sala/21' \
         }'
 
 DELETE SALAS:
-curl --location --request DELETE 'http://10.89.240.70:5000/reservas/v1/sala/21' \
+curl --location --request DELETE 'http://10.89.240.72:5000/reservas/v1/sala/21' \
 --header 'Content-Type: application/json' \
 --data '{
             "nome": "Auditório",
@@ -35,7 +35,7 @@ curl --location --request DELETE 'http://10.89.240.70:5000/reservas/v1/sala/21' 
         }'
 
 VALIDATE SALA:
-curl --location 'http://10.89.240.70:5000/reservas/v1/sala' \
+curl --location 'http://10.89.240.72:5000/reservas/v1/sala' \
 --header 'Content-Type: application/json' \
 --data '{
             "nome": "",
@@ -46,7 +46,7 @@ curl --location 'http://10.89.240.70:5000/reservas/v1/sala' \
 
         }'
 VALIDATE SALA:
-curl --location 'http://10.89.240.70:5000/reservas/v1/sala' \
+curl --location 'http://10.89.240.72:5000/reservas/v1/sala' \
 --header 'Content-Type: application/json' \
 --data '{
             "nome": "Desenvolvimento de Sistema",
@@ -57,7 +57,7 @@ curl --location 'http://10.89.240.70:5000/reservas/v1/sala' \
 
         }'
 VALIDATE SALA:
-curl --location 'http://10.89.240.70:5000/reservas/v1/sala' \
+curl --location 'http://10.89.240.72:5000/reservas/v1/sala' \
 --header 'Content-Type: application/json' \
 --data '{
             "nome": "Eletroeletronica",

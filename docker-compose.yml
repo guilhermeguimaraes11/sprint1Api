@@ -4,7 +4,7 @@ services:
   app:
   ## O "." indica que a imagem do docker será construida no diretório atual 
     build: .
-    command: ["npm", "start"]
+    command: /bin/sh -c "npm install && npm start"
     ## Mapeia porta 5000 do container para a porta 5000 da máquina 
     ports:
       - "5000:5000" 
@@ -24,9 +24,9 @@ services:
       MYSQL_DATABASE: reserva_senai
       ## Mapeia a porta 3306 do container para a porta 3306 da maquina 
     ports:
-       - "3307:3307"
+       - "3307:3306"
     volumes: 
        - db_data:/var/lib/mysql
-       - ./mysql-init/docker:/docker-entrypoint-initdb.d
+       - ./sql/docker:/docker-entrypoint-initdb.d
 volumes:
   db_data:

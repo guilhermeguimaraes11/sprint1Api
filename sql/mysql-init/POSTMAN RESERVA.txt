@@ -1,9 +1,9 @@
 GET RESERVA:
-curl --location 'http://10.89.240.70:5000/reservas/v1/reservaschedule' \
+curl --location 'http://10.89.240.72:5000/reservas/v1/reservaschedule' \
 --data ''
 
 POST RESERVA:
-curl --location 'http://10.89.240.70:5000/reservas/v1/reservaschedule' \
+curl --location 'http://10.89.240.72:5000/reservas/v1/reservaschedule' \
 --header 'Content-Type: application/json' \
 --data '
 {
@@ -15,11 +15,11 @@ curl --location 'http://10.89.240.70:5000/reservas/v1/reservaschedule' \
 }'
 
 DELETE RESERVA:
-curl --location --request DELETE 'http://10.89.240.70:5000/reservas/v1/reservaschedule/1' \
+curl --location --request DELETE 'http://10.89.240.72:5000/reservas/v1/reservaschedule/1' \
 --data ''
 
 VALIDATE RESERVA:
-curl --location 'http://10.89.240.70:5000/reservas/v1/reservaschedule' \
+curl --location 'http://10.89.240.72:5000/reservas/v1/reservaschedule' \
 --header 'Content-Type: application/json' \
 --data '
 {
@@ -31,7 +31,7 @@ curl --location 'http://10.89.240.70:5000/reservas/v1/reservaschedule' \
 }'
 
 VALIDATE RESERVA:
-curl --location 'http://10.89.240.70:5000/reservas/v1/reservaschedule' \
+curl --location 'http://10.89.240.72:5000/reservas/v1/reservaschedule' \
 --header 'Content-Type: application/json' \
 --data '
 {

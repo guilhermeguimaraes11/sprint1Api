@@ -1,8 +1,8 @@
 -- docker-compose up --build
 
 
-CREATE DATABASE reserva_senai;
-USE reserva_senai;
+-- CREATE DATABASE reserva_senai;
+-- USE reserva_senai;
 
 CREATE TABLE usuario(
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
