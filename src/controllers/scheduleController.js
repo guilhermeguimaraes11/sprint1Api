@@ -363,6 +363,87 @@ module.exports = class reserva_salaController {
     }
   }
 
+
+  static async updatereserva_sala(req, res) {
+    const idReserva = req.params.id_reserva;
+    const { data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario } = req.body;
+  
+    try {
+      // Converte a string data para o formato YYYY-MM-DD esperado pelo MySQL
+      const date = new Date(data);
+      const ano = date.getFullYear();
+      const mes = (date.getMonth() + 1).toString().padStart(2, "0");
+      const dia = date.getDate().toString().padStart(2, "0");
+      const dataFormatada = `${ano}-${mes}-${dia}`;
+  
+      // Cria Date para comparar data e horário local
+      const now = new Date();
+      const [startHour, startMinute] = horario_inicio.split(":").map(Number);
+      const dataHoraAgendamento = new Date(ano, date.getMonth(), dia, startHour, startMinute);
+  
+      if (dataHoraAgendamento < now) {
+        return res.status(400).json({
+          error: "Não é possível atualizar para um horário que já passou.",
+        });
+      }
+  
+      const overlapQuery = `
+        SELECT 1 FROM reserva_sala
+        WHERE fk_id_sala = ?
+          AND data = ?
+          AND id_reserva != ?
+          AND (
+            (horario_inicio < ? AND horario_fim > ?)
+          )
+        LIMIT 1
+      `;
+  
+      connect.query(
+        overlapQuery,
+        [fk_id_sala, dataFormatada, idReserva, horario_fim, horario_inicio],
+        function (err, results) {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({ error: "Erro ao verificar conflitos." });
+          }
+  
+          if (results.length > 0) {
+            return res.status(409).json({ error: "Já existe uma reserva nesse horário para esta sala." });
+          }
+  
+          const updateQuery = `
+            UPDATE reserva_sala
+            SET data = ?, horario_inicio = ?, horario_fim = ?, fk_id_sala = ?, fk_id_usuario = ?
+            WHERE id_reserva = ?
+          `;
+  
+          connect.query(
+            updateQuery,
+            [dataFormatada, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario, idReserva],
+            function (err, result) {
+              if (err) {
+                console.log(err);
+                return res.status(500).json({ error: "Erro ao atualizar reserva." });
+              }
+  
+              if (result.affectedRows === 0) {
+                return res.status(404).json({ error: "Reserva não encontrada." });
+              }
+  
+              return res.status(200).json({ message: "Reserva atualizada com sucesso." });
+            }
+          );
+        }
+      );
+    } catch (error) {
+      console.error("Erro ao atualizar reserva:", error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }
+  
+  
+  
+
   
 
   static async deletereserva_sala(req, res) {

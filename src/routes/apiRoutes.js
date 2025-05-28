@@ -31,6 +31,7 @@ router.post("/salasdisponivelhorariosintervalo", scheduleController.getAvailabil
 
 // Rotas de Reserva de Sala
 router.post("/reservaschedule", scheduleController.createreserva_sala); // Criar reserva - **protegida**
+router.put("/reservaschedule/:id_reserva", scheduleController.updatereserva_sala);
 router.get("/reservaschedule", scheduleController.getAllreserva_salas); // Listar todas reservas - **protegida**
 router.delete("/reservaschedule/:id_reserva", scheduleController.deletereserva_sala); // Deletar reserva - **protegida**
 
