@@ -363,7 +363,6 @@ module.exports = class reserva_salaController {
     }
   }
 
-
   static async updatereserva_sala(req, res) {
     const idReserva = req.params.id_reserva;
     const { data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario } = req.body;
@@ -441,10 +440,26 @@ module.exports = class reserva_salaController {
     }
   }
   
-  
-  
+  static async getReservas_id(req, res) {
+    const id = req.params.id;
+    const query = `SELECT * FROM schedule WHERE user = ${id};`;
 
-  
+    try {
+      connect.query(query, function (err, results) {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: "Erro interno do servidor" });
+        }
+        return res.status(200).json({
+          message: "Agendamentos obtidos com sucesso para o usuário: " + id,
+          results,
+        });
+      });
+    } catch (error) {
+      console.error("Erro ao executar a consulta:", error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }
 
   static async deletereserva_sala(req, res) {
     const reserva_salaId = req.params.id_reserva;
