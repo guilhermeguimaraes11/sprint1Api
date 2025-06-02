@@ -11,6 +11,14 @@ curl --location 'http://10.89.240.72:5000/reservas/v1/user' \
             "senha": "senha123"
         }'
 
+LOGIN DO USUARIO:
+curl --location 'http://10.89.240.72:5000/reservas/v1/login' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "gui.guimaraes@example.com",
+    "senha": "senha123"
+}'
+
 PUT DO USUARIO:
 curl --location --request PUT 'http://10.89.240.72:5000/reservas/v1/user/21' \
 --header 'Content-Type: application/json' \

@@ -1,132 +1,41 @@
 DELIMITER $$
-
-CREATE TRIGGER naopossivel_alterar_data_hora_menos_de_2hrs
-BEFORE UPDATE ON reserva_sala
+CREATE TRIGGER Horario_Início_Mínimo_para_Reservas
+BEFORE INSERT ON reserva_sala
 FOR EACH ROW
 BEGIN
-    -- TODAS AS DECLARAÇÕES DE VARIÁVEIS DEVEM VIR AQUI NO INÍCIO
-    DECLARE new_start_datetime DATETIME;
-    DECLARE current_time_plus_2h DATETIME; -- Corrigido: sem espaço no "DECLARE"
-
-    -- Agora, as atribuições e a lógica do trigger
-    SET new_start_datetime = CONCAT(NEW.data, ' ', NEW.horario_inicio);
-    SET current_time_plus_2h = ADDTIME(NOW(), '02:00:00');
-
-    -- Verifica se a NOVA data/horário de início é no futuro, mas dentro das próximas 2 horas
-    -- E se qualquer um dos campos de data/horário foi realmente alterado
-    IF new_start_datetime <= current_time_plus_2h AND new_start_datetime >= NOW() AND
-       (NEW.data <> OLD.data OR NEW.horario_inicio <> OLD.horario_inicio OR NEW.horario_fim <> OLD.horario_fim) THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Não é possível alterar a data/horário de uma reserva que iniciará em menos de 2 horas.';
+    IF NEW.horario_inicio < '07:00:00' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'O horário de início da reserva deve ser a partir das 07:00.';
     END IF;
-
-    -- Adicional: Se a reserva já passou ou está em andamento, impede qualquer alteração.
-    -- Isso garante que reservas passadas não sejam alteradas e reservas em andamento não sejam manipuladas.
-    IF new_start_datetime < NOW() THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Não é possível alterar uma reserva que já iniciou ou já ocorreu.';
-    END IF;
-
 END$$
-
 DELIMITER ;
 
 
+INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario) VALUES
+('2025-12-25', '06:30:00', '08:00:00', 1, 1);
 
 
-================================================================================
-
-SELECT NOW();
-
-
-================================================================================
-
--- 1. Reserva para testar a condição "próxima ao início" (ex: daqui a 10 minutos)
--- Ajuste os minutos para que o horário de início seja cerca de 10-15 minutos à frente do seu horário atual.
-INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario)
-VALUES (CURDATE(), ADDTIME(CURTIME(), '00:10:00'), ADDTIME(CURTIME(), '00:40:00'), 1, 1);
-
--- 2. Reserva para testar a condição "futuro distante" (ex: amanhã)
-INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario)
-VALUES (DATE_ADD(CURDATE(), INTERVAL 1 DAY), '10:00:00', '11:00:00', 2, 2);
-
--- 3. Reserva para testar a condição "já iniciou ou ocorreu" (ex: ontem)
-INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario)
-VALUES (DATE_SUB(CURDATE(), INTERVAL 1 DAY), '09:00:00', '10:00:00', 3, 3);
-
--- Verifique os IDs das reservas que você acabou de inserir
-SELECT * FROM reserva_sala ORDER BY id_reserva DESC LIMIT 3;
--- Anote os id_reserva para usar nos testes abaixo.
--- Ex: supondo que as reservas acima tenham IDs 6, 7 e 8, respectivamente.
-
-================================================================================
-
--- Use o ID da reserva que você inseriu para daqui a ~10 minutos (ex: id_reserva = 6)
-
--- Tentativa de mudar o horário de início (atrasar em 5 minutos)
-UPDATE reserva_sala
-SET horario_inicio = ADDTIME(horario_inicio, '00:05:00')
-WHERE id_reserva = 6;
--- Resultado Esperado: ERRO. Mensagem: 'Não é possível alterar a data/horário de uma reserva que iniciará em menos de 2 horas.'
-
--- Tentativa de mudar o horário de fim (estender em 10 minutos)
-UPDATE reserva_sala
-SET horario_fim = ADDTIME(horario_fim, '00:10:00')
-WHERE id_reserva = 6;
--- Resultado Esperado: ERRO. Mensagem: 'Não é possível alterar a data/horário de uma reserva que iniciará em menos de 2 horas.'
-
--- Tentativa de mudar a data (para o mesmo dia, mas a hora de início ainda dentro das 2 horas)
-UPDATE reserva_sala
-SET data = CURDATE() -- Mantém a mesma data, mas o trigger ainda verifica a proximidade
-WHERE id_reserva = 6;
--- Resultado Esperado: Se a hora de início ainda estiver dentro das 2 horas, ERRO. Mensagem: 'Não é possível alterar a data/horário de uma reserva que iniciará em menos de 2 horas.'
-
-================================================================================
-
--- Use o ID da reserva que você inseriu para o passado (ex: id_reserva = 8)
-
--- Tentar estender o horário de fim
-UPDATE reserva_sala
-SET horario_fim = ADDTIME(horario_fim, '01:00:00')
-WHERE id_reserva = 8;
--- Resultado Esperado: ERRO. Mensagem: 'Não é possível alterar uma reserva que já iniciou ou já ocorreu.'
-
--- Tentar mudar a data
-UPDATE reserva_sala
-SET data = CURDATE()
-WHERE id_reserva = 8;
--- Resultado Esperado: ERRO. Mensagem: 'Não é possível alterar uma reserva que já iniciou ou já ocorreu.'
-
-================================================================================
-
--- Use o ID da reserva que você inseriu para amanhã (ex: id_reserva = 7)
-
--- Tente alterar o horário de fim dessa reserva
-UPDATE reserva_sala
-SET horario_fim = '12:00:00'
-WHERE id_reserva = 7;
--- Resultado Esperado: SUCESSO. Nenhuma mensagem de erro do trigger.
--- Verifique a alteração:
-SELECT * FROM reserva_sala WHERE id_reserva = 7;
-
--- Tente alterar a data da reserva
-UPDATE reserva_sala
-SET data = DATE_ADD(CURDATE(), INTERVAL 2 DAY) -- Mudar para depois de amanhã
-WHERE id_reserva = 7;
--- Resultado Esperado: SUCESSO. Nenhuma mensagem de erro do trigger.
--- Verifique a alteração:
-SELECT * FROM reserva_sala WHERE id_reserva = 7;
-
-================================================================================
-
--- Use a reserva futura (ex: id_reserva = 7)
-
-UPDATE reserva_sala
-SET fk_id_usuario = 3 -- Mudar o usuário da reserva
-WHERE id_reserva = 7;
--- Resultado Esperado: SUCESSO. Nenhuma mensagem de erro do trigger.
--- Verifique a alteração:
-SELECT * FROM reserva_sala WHERE id_reserva = 7;
+INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario) VALUES
+('2025-12-25', '07:00:00', '09:00:00', 1, 1);
 
 
 
+
+
+DELIMITER $$
+CREATE TRIGGER Horario_de_Fim_Máximo_para_Reservas
+BEFORE INSERT ON reserva_sala
+FOR EACH ROW
+BEGIN
+    IF NEW.horario_fim > '23:00:00' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'O horário de fim da reserva não pode ultrapassar as 23:00.';
+    END IF;
+END$$
+DELIMITER ;
+
+
+INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario) VALUES
+('2025-12-26', '22:00:00', '23:30:00', 2, 2);
+
+
+INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario) VALUES
+('2025-12-26', '20:00:00', '23:00:00', 2, 2);
