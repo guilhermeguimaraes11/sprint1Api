@@ -20,7 +20,6 @@ INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_u
 
 
 
-
 DELIMITER $$
 CREATE TRIGGER Horario_de_Fim_Máximo_para_Reservas
 BEFORE INSERT ON reserva_sala
