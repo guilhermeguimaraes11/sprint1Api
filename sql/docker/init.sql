@@ -1,5 +1,7 @@
 -- docker-compose up --build
 
+-- docker exec -it 6f0c3fafefec91d5766a7075abc1504df4fa4193e12305214d5e2621f027549b mysql -u root -p
+
 
 -- CREATE DATABASE reserva_senai;
 -- USE reserva_senai;
@@ -105,4 +107,20 @@ INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_u
     END //
 
     DELIMITER ;
+
+
+    DELIMITER //
+
+CREATE PROCEDURE listar_reservas_por_usuario(p_usuario INT)
+BEGIN
+    SELECT id_reserva, horario_inicio, horario_fim, data
+    FROM reserva_sala
+    WHERE fk_id_usuario = p_usuario
+    ORDER BY data, horario_inicio;
+END //
+
+DELIMITER ;
+
+
+
     
