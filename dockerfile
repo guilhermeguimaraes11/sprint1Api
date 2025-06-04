@@ -1,6 +1,10 @@
 ## Baixa e executa a imagem do node na versão Alpine (versão simplificada)
 FROM node:alpine
 
+RUN apk add --no-cache tzdata
+
+ENV TZ=America/Sao_Paulo
+
 ## Define o local onde o app ira ficar no disco do container 
 ## O caminho o DEV quem escolhe
 WORKDIR /usr/app

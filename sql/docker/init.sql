@@ -85,3 +85,24 @@ INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_u
 ('2024-11-13', '08:00:00', '12:00:00', 3, 3),
 ('2024-11-13', '13:00:00', '17:00:00', 4, 4),
 ('2024-11-13', '09:00:00', '13:00:00', 5, 5);
+
+    DELIMITER //
+
+    CREATE TRIGGER reserva_antecedencia
+    BEFORE INSERT ON reserva_sala
+    FOR EACH ROW
+    BEGIN
+        DECLARE data_hora_reserva DATETIME;
+        DECLARE data_hora_atual DATETIME;
+
+        SET data_hora_reserva = CONCAT(NEW.data, ' ', NEW.horario_inicio);
+        SET data_hora_atual = NOW();
+
+        IF TIMESTAMPDIFF(MINUTE, data_hora_atual, data_hora_reserva) < 60 THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'A reserva deve ser feita com no mínimo 1 hora de antecedência.';
+        END IF;
+    END //
+
+    DELIMITER ;
+    

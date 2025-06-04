@@ -5,7 +5,7 @@ const verifyJWT = require('../services/verifyJWT');
 // Controllers
 const salaController = require("../controllers/salaController");
 const userController = require("../controllers/userController");
-const scheduleController = require("../controllers/scheduleController");
+const scheduleController = require("../controllers/scheduleController"); // Certifique-se de que este é o nome correto do seu controller de reservas
 
 // Rotas de Usuário
 router.post("/user", userController.createUser); // Cadastrar usuário - **não protegida**
@@ -13,7 +13,7 @@ router.post("/login", userController.loginUser); // Login de usuário - **não p
 router.get("/user", verifyJWT, userController.getAllUsers); // Listar todos usuários - **protegida**
 router.put("/user/:id_usuario", verifyJWT, userController.updateUser); // Atualizar usuário - **protegida**
 router.delete("/user/:id_usuario", verifyJWT, userController.deleteUser); // Deletar usuário - **protegida**
-router.get("/user/reservations/:id_usuario", verifyJWT, userController.listUserReservations); // Nova rota: Listar reservas de um usuário por ID - **protegida**
+
 
 
 // Rotas de Sala

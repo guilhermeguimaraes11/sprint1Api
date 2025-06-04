@@ -1,31 +1,31 @@
-DELIMITER //
+    DELIMITER //
 
-CREATE TRIGGER reserva_antecedencia
-BEFORE INSERT ON reserva_sala
-FOR EACH ROW
-BEGIN
-    DECLARE data_hora_reserva DATETIME;
-    DECLARE data_hora_atual DATETIME;
+    CREATE TRIGGER reserva_antecedencia
+    BEFORE INSERT ON reserva_sala
+    FOR EACH ROW
+    BEGIN
+        DECLARE data_hora_reserva DATETIME;
+        DECLARE data_hora_atual DATETIME;
 
-    SET data_hora_reserva = CONCAT(NEW.data, ' ', NEW.horario_inicio);
-    SET data_hora_atual = NOW();
+        SET data_hora_reserva = CONCAT(NEW.data, ' ', NEW.horario_inicio);
+        SET data_hora_atual = NOW();
 
-    IF TIMESTAMPDIFF(MINUTE, data_hora_atual, data_hora_reserva) < 60 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'A reserva deve ser feita com no mínimo 1 hora de antecedência.';
-    END IF;
-END //
+        IF TIMESTAMPDIFF(MINUTE, data_hora_atual, data_hora_reserva) < 60 THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'A reserva deve ser feita com no mínimo 1 hora de antecedência.';
+        END IF;
+    END //
 
-DELIMITER ;
-
-
--- Tentando reservar para 04/06/2025 às 11:30:00
--- Se a hora atual for 04/06/2025 11:00:00, isso deve falhar.
-INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario) VALUES
-('2025-06-04', '11:30:00', '12:30:00', 1, 1);
+    DELIMITER ;
 
 
--- Tentando reservar para 04/06/2025 às 12:00:00
--- Se a hora atual for 04/06/2025 11:00:00, isso deve ser bem-sucedido.
-INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario) VALUES
-('2025-06-04', '13:00:00', '14:00:00', 2, 2);
+    -- Tentando reservar para 04/06/2025 às 11:30:00
+    -- Se a hora atual for 04/06/2025 11:00:00, isso deve falhar.
+    INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario) VALUES
+    ('2025-06-04', '13:30:00', '14:30:00', 1, 1);
+
+
+    -- Tentando reservar para 04/06/2025 às 12:00:00
+    -- Se a hora atual for 04/06/2025 11:00:00, isso deve ser bem-sucedido.
+    INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario) VALUES
+    ('2025-06-04', '13:00:00', '14:00:00', 2, 2);
