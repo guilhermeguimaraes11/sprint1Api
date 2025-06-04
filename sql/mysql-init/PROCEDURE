@@ -2,17 +2,16 @@ PROCEDURE PARA LISTAR AS RESERVAS DE UM USUÁRIO
 
 DELIMITER //
 
-CREATE PROCEDURE listar_reservas_por_usuario(p_usuario INT, p_data DATE)
+CREATE PROCEDURE listar_reservas_por_usuario(p_usuario INT)
 BEGIN
-    -- Seleciona as reservas do usuário específico na data fornecida
-    SELECT id_reserva, horario_inicio, horario_fim
+    SELECT id_reserva, horario_inicio, horario_fim, data
     FROM reserva_sala
-    WHERE fk_id_usuario = p_usuario AND data = p_data
-    ORDER BY horario_inicio;
+    WHERE fk_id_usuario = p_usuario
+    ORDER BY data, horario_inicio;
 END //
 
 DELIMITER ;
 
 -- Chamando a Procedure:
-CALL listar_reservas_por_usuario(1, '2024-11-13');
+CALL listar_reservas_por_usuario(1);
 

@@ -13,19 +13,20 @@ router.post("/login", userController.loginUser); // Login de usuário - **não p
 router.get("/user", verifyJWT, userController.getAllUsers); // Listar todos usuários - **protegida**
 router.put("/user/:id_usuario", verifyJWT, userController.updateUser); // Atualizar usuário - **protegida**
 router.delete("/user/:id_usuario", verifyJWT, userController.deleteUser); // Deletar usuário - **protegida**
+router.get("/user/reservations/:id_usuario", verifyJWT, userController.listUserReservations); // Nova rota: Listar reservas de um usuário por ID - **protegida**
 
 
 // Rotas de Sala
 router.post("/sala", salaController.createSalas); // Cadastrar sala
-router.get("/salas", salaController.getAllSalasTabela); // Listar todas as salas 
-router.put("/sala/:id_sala", salaController.updateSala); // Atualizar sala 
-router.delete("/sala/:id_sala", salaController.deleteSala); // Deletar sala 
+router.get("/salas", salaController.getAllSalasTabela); // Listar todas as salas
+router.put("/sala/:id_sala", salaController.updateSala); // Atualizar sala
+router.delete("/sala/:id_sala", salaController.deleteSala); // Deletar sala
 
 
 // Consultas de Disponibilidade de Sala
-router.get("/salasdisponivelhorario",  salaController.getSalasDisponiveisHorario); // Verificar disponibilidade por horário - ** protegida**
-router.get("/salasdisponiveldata",  salaController.getSalasDisponiveisData); // Verificar disponibilidade por data - ** protegida**
-router.get("/salasdisponiveis",  salaController.getSalasDisponiveis); // Ver todas salas disponíveis - **protegida**
+router.get("/salasdisponivelhorario", salaController.getSalasDisponiveisHorario); // Verificar disponibilidade por horário - ** protegida**
+router.get("/salasdisponiveldata", salaController.getSalasDisponiveisData); // Verificar disponibilidade por data - ** protegida**
+router.get("/salasdisponiveis", salaController.getSalasDisponiveis); // Ver todas salas disponíveis - **protegida**
 router.post("/salasdisponivelhorariosintervalo", scheduleController.getAvailability); // Ver horários disponíveis em intervalo
 
 

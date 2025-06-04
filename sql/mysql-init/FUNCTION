@@ -1,6 +1,6 @@
 FUNCTION HORAS RESERVADAS POR USUÁRIO
 
-SELECT horas_reservadas_por_usuario(4, '2024-11-13') AS total_horas;
+  SELECT horas_reservadas_por_usuario(4, '2024-11-13') AS total_horas;
 -----------------------------------------------------------------------------------------------------------------
 DELIMITER //
 

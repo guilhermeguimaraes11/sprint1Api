@@ -1,40 +1,31 @@
-DELIMITER $$
-CREATE TRIGGER Horario_Início_Mínimo_para_Reservas
+DELIMITER //
+
+CREATE TRIGGER reserva_antecedencia
 BEFORE INSERT ON reserva_sala
 FOR EACH ROW
 BEGIN
-    IF NEW.horario_inicio < '07:00:00' THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'O horário de início da reserva deve ser a partir das 07:00.';
+    DECLARE data_hora_reserva DATETIME;
+    DECLARE data_hora_atual DATETIME;
+
+    SET data_hora_reserva = CONCAT(NEW.data, ' ', NEW.horario_inicio);
+    SET data_hora_atual = NOW();
+
+    IF TIMESTAMPDIFF(MINUTE, data_hora_atual, data_hora_reserva) < 60 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'A reserva deve ser feita com no mínimo 1 hora de antecedência.';
     END IF;
-END$$
+END //
+
 DELIMITER ;
 
 
+-- Tentando reservar para 04/06/2025 às 11:30:00
+-- Se a hora atual for 04/06/2025 11:00:00, isso deve falhar.
 INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario) VALUES
-('2025-12-25', '06:30:00', '08:00:00', 1, 1);
+('2025-06-04', '11:30:00', '12:30:00', 1, 1);
 
 
+-- Tentando reservar para 04/06/2025 às 12:00:00
+-- Se a hora atual for 04/06/2025 11:00:00, isso deve ser bem-sucedido.
 INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario) VALUES
-('2025-12-25', '07:00:00', '09:00:00', 1, 1);
-
-
-
-
-DELIMITER $$
-CREATE TRIGGER Horario_de_Fim_Máximo_para_Reservas
-BEFORE INSERT ON reserva_sala
-FOR EACH ROW
-BEGIN
-    IF NEW.horario_fim > '23:00:00' THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'O horário de fim da reserva não pode ultrapassar as 23:00.';
-    END IF;
-END$$
-DELIMITER ;
-
-
-INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario) VALUES
-('2025-12-26', '22:00:00', '23:30:00', 2, 2);
-
-
-INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario) VALUES
-('2025-12-26', '20:00:00', '23:00:00', 2, 2);
+('2025-06-04', '13:00:00', '14:00:00', 2, 2);

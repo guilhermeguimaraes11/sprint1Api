@@ -1,12 +1,12 @@
 const connect = require("../db/connect");
-const validateUser  = require("../services/validateUser");
+const validateUser = require("../services/validateUser");
 const jwt = require("jsonwebtoken");
 
 module.exports = class userController {
-  static async createUser (req, res) {
+  static async createUser(req, res) {
     const { cpf, email, senha, nomecompleto } = req.body;
 
-    const validationError = validateUser (req.body);
+    const validationError = validateUser(req.body);
     if (validationError) {
       return res.status(400).json(validationError);
     }
@@ -15,7 +15,7 @@ module.exports = class userController {
       const query = `INSERT INTO usuario (cpf, email, senha, nomecompleto) VALUES (?, ?, ?, ?)`;
       connect.query(query, [cpf, email, senha, nomecompleto], (err) => {
         if (err) {
-          console.error(err); // Log do erro para depuração
+          console.error(err);
           if (err.code === "ER_DUP_ENTRY") {
             if (err.message.includes("email")) {
               return res.status(400).json({ error: "Email já cadastrado" });
@@ -30,25 +30,24 @@ module.exports = class userController {
         return res.status(201).json({ message: "Usuário criado com sucesso" });
       });
     } catch (error) {
-      console.error(error); // Log do erro para depuração
+      console.error(error);
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
   static async getAllUsers(req, res) {
     const query = `SELECT * FROM usuario`;
-  
+
     try {
-      // O middleware verifyJWT já verificará se o usuário está autenticado
       if (!req.userId) {
         return res.status(403).json({ error: "Acesso não autorizado" });
       }
-  
+
       connect.query(query, function (err, results) {
         if (err) {
           console.error(err);
           return res.status(500).json({ error: "Erro interno do servidor" });
         }
-  
+
         return res.status(200).json({ message: "Obtendo todos os usuários", users: results });
       });
     } catch (error) {
@@ -59,17 +58,16 @@ module.exports = class userController {
   static async updateUser(req, res) {
     const { cpf, email, senha, nomecompleto } = req.body;
     const { id_usuario } = req.params;
-  
-    // Verifica se o usuário está autenticado e se está tentando atualizar seus próprios dados
+
     if (id_usuario != req.userId) {
       return res.status(403).json({ error: "Acesso não autorizado" });
     }
-  
+
     const validationError = validateUser(req.body);
     if (validationError) {
       return res.status(400).json(validationError);
     }
-  
+
     try {
       const query =
         "UPDATE usuario SET cpf = ?, email = ?, senha = ?, nomecompleto = ? WHERE id_usuario = ?";
@@ -96,40 +94,35 @@ module.exports = class userController {
       return res.status(500).json({ error });
     }
   }
-  
+
   static async deleteUser(req, res) {
     const userId = req.params.id_usuario;
-  
-    // Verifica se o usuário está autenticado e se ele está tentando excluir sua própria conta
+
     if (userId != req.userId) {
       return res.status(403).json({ error: "Acesso não autorizado" });
     }
-  
+
     const query = `DELETE FROM usuario WHERE id_usuario = ?`;
     const values = [userId];
-  
+
     try {
       connect.query(query, values, function (err, results) {
         if (err) {
-          // Verificando o erro específico de chave estrangeira
           if (err.code === "ER_ROW_IS_REFERENCED_2") {
             console.error("Erro de chave estrangeira:", err);
             return res.status(400).json({
               error: "Não é possível excluir este usuário, pois ele possui uma reserva.",
             });
           }
-  
-          // Outros erros gerais
+
           console.error(err);
           return res.status(500).json({ error: "Erro interno do servidor" });
         }
-  
-        // Caso não tenha encontrado o usuário para deletar
+
         if (results.affectedRows === 0) {
           return res.status(404).json({ error: "Usuário não encontrado" });
         }
-  
-        // Sucesso ao excluir o usuário
+
         return res.status(200).json({
           message: "Usuário excluído com ID: " + userId,
         });
@@ -139,9 +132,7 @@ module.exports = class userController {
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
-  
 
-  // Método de Login - Implementar
   static async loginUser(req, res) {
     const { email, senha } = req.body;
 
@@ -169,10 +160,9 @@ module.exports = class userController {
         }
 
         const token = jwt.sign({ id: user.id_usuario }, process.env.SECRET, {
-          expiresIn: "1h", 
+          expiresIn: "1h",
         });
-  
-        // remove a senha do retorno
+
         delete user.password;
 
         return res.status(200).json({
@@ -183,6 +173,39 @@ module.exports = class userController {
       });
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }
+
+  static async listUserReservations(req, res) {
+    const userId = req.params.id_usuario;
+
+    if (userId != req.userId) {
+      return res.status(403).json({ error: "Acesso não autorizado" });
+    }
+
+    const query = `CALL listar_reservas_por_usuario(?)`;
+
+    try {
+      connect.query(query, [userId], (err, results) => {
+        if (err) {
+          console.error("Erro ao executar a procedure:", err);
+          return res.status(500).json({ error: "Erro interno do servidor" });
+        }
+
+        const reservations = results[0];
+
+        if (reservations.length === 0) {
+          return res.status(404).json({ message: "Nenhuma reserva encontrada para este usuário." });
+        }
+
+        return res.status(200).json({
+          message: `Reservas para o usuário ID: ${userId}`,
+          reservations: reservations,
+        });
+      });
+    } catch (error) {
+      console.error("Erro ao listar as reservas do usuário:", error);
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
