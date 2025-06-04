@@ -24,10 +24,7 @@ router.delete("/sala/:id_sala", salaController.deleteSala); // Deletar sala
 
 
 // Consultas de Disponibilidade de Sala
-router.get("/salasdisponivelhorario", salaController.getSalasDisponiveisHorario); // Verificar disponibilidade por horário - ** protegida**
-router.get("/salasdisponiveldata", salaController.getSalasDisponiveisData); // Verificar disponibilidade por data - ** protegida**
-router.get("/salasdisponiveis", salaController.getSalasDisponiveis); // Ver todas salas disponíveis - **protegida**
-router.post("/salasdisponivelhorariosintervalo", scheduleController.getAvailability); // Ver horários disponíveis em intervalo
+router.get("/salasdisponiveldata/:data_inicio/:data_fim",  salaController.getSalasDisponiveisData);
 
 
 // Rotas de Reserva de Sala
