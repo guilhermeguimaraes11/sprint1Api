@@ -111,13 +111,32 @@ INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_u
 
     DELIMITER //
 
-CREATE PROCEDURE listar_reservas_por_usuario(p_usuario INT)
+CREATE PROCEDURE listar_reserv'as'_por_usuario(p_usuario INT)
 BEGIN
     SELECT id_reserva, horario_inicio, horario_fim, data
     FROM reserva_sala
     WHERE fk_id_usuario = p_usuario
     ORDER BY data, horario_inicio;
 END //
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE FUNCTION IF NOT EXISTS total_reservas_por_sala(idSala INT)
+RETURNS INT
+DETERMINISTIC
+READS SQL DATA
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*) INTO total
+    FROM reserva_sala 
+    WHERE fk_id_sala = idSala; 
+
+    RETURN total;
+END$$
 
 DELIMITER ;
 

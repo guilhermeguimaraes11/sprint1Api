@@ -1,23 +1,19 @@
-FUNCTION HORAS RESERVADAS POR USUÁRIO
+DELIMITER $$
 
-  SELECT horas_reservadas_por_usuario(4, '2024-11-13') AS total_horas;
------------------------------------------------------------------------------------------------------------------
-DELIMITER //
-
-CREATE FUNCTION IF NOT EXISTS horas_reservadas_por_usuario(p_usuario INT, p_data DATE)
+CREATE FUNCTION IF NOT EXISTS total_reservas_por_sala(idSala INT)
 RETURNS INT
 DETERMINISTIC
+READS SQL DATA
 BEGIN
-  DECLARE total INT;
+    DECLARE total INT;
 
-  -- Calcula a soma das horas de todas as reservas feitas pelo usuário na data especificada
-  SELECT SUM(TIMESTAMPDIFF(HOUR, horario_inicio, horario_fim))
-  INTO total
-  FROM reserva_sala
-  WHERE fk_id_usuario = p_usuario AND data = p_data;
+    SELECT COUNT(*) INTO total
+    FROM reserva_sala 
+    WHERE fk_id_sala = idSala; 
 
-  -- Retorna o total de horas ou 0 se não houver reservas
-  RETURN IFNULL(total, 0);
-END //
+    RETURN total;
+END$$
 
 DELIMITER ;
+
+-- SELECT total_reservas_por_sala(5);

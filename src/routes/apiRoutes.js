@@ -15,16 +15,19 @@ router.put("/user/:id_usuario", verifyJWT, userController.updateUser); // Atuali
 router.delete("/user/:id_usuario", verifyJWT, userController.deleteUser); // Deletar usuário - **protegida**
 
 
-
 // Rotas de Sala
 router.post("/sala", salaController.createSalas); // Cadastrar sala
 router.get("/salas", salaController.getAllSalasTabela); // Listar todas as salas
+
+// NOVO: Rota para obter detalhes de uma sala específica, incluindo o total de reservas
+router.get("/sala/:id_sala", salaController.getSalaDetails); 
+
 router.put("/sala/:id_sala", salaController.updateSala); // Atualizar sala
 router.delete("/sala/:id_sala", salaController.deleteSala); // Deletar sala
 
 
 // Consultas de Disponibilidade de Sala
-router.get("/salasdisponiveldata/:data_inicio/:data_fim",  salaController.getSalasDisponiveisData);
+router.get("/salasdisponiveldata/:data_inicio/:data_fim", salaController.getSalasDisponiveisData);
 
 
 // Rotas de Reserva de Sala
