@@ -1,6 +1,7 @@
 -- docker-compose up --build
+-- mysql -u root -p
 
--- docker exec -it 430415afc98b3ec80230202e063789d017c610a7e655446226d572ca551b0f7f mysql -u root -p
+-- docker exec -it c32b7034f1f1cb9d09ec8c8b9783a0b0160b4c841333af716fdece267af28b81 mysql -u root -p
 
 
 -- CREATE DATABASE reserva_senai;
