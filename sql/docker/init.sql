@@ -1,6 +1,6 @@
 -- docker-compose up --build
 
--- docker exec -it 6f0c3fafefec91d5766a7075abc1504df4fa4193e12305214d5e2621f027549b mysql -u root -p
+-- docker exec -it 679eed97b2a32cc675564910881dfc2361a3f91cc03bb4e83d7631c16824e3ba mysql -u root -p
 
 
 -- CREATE DATABASE reserva_senai;
@@ -11,7 +11,7 @@ CREATE TABLE usuario(
     nomecompleto VARCHAR(50) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     cpf CHAR(11) NOT NULL UNIQUE,
-    senha VARCHAR(16) NOT NULL
+    senha VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE sala (

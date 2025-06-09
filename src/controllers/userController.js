@@ -1,6 +1,8 @@
 const connect = require("../db/connect");
 const validateUser = require("../services/validateUser");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const SALT_ROUNDS = 10;
 
 module.exports = class userController {
   static async createUser(req, res) {
@@ -11,9 +13,11 @@ module.exports = class userController {
       return res.status(400).json(validationError);
     }
 
+    const hashedPassword = await bcrypt.hash(senha, SALT_ROUNDS);
+
     try {
       const query = `INSERT INTO usuario (cpf, email, senha, nomecompleto) VALUES (?, ?, ?, ?)`;
-      connect.query(query, [cpf, email, senha, nomecompleto], (err) => {
+      connect.query(query, [cpf, email, hashedPassword, nomecompleto], (err) => {
         if (err) {
           console.error(err);
           if (err.code === "ER_DUP_ENTRY") {
@@ -155,7 +159,10 @@ module.exports = class userController {
 
         const user = results[0];
 
-        if (user.senha !== senha) {
+        // Comparar a senha enviada na requisiçao com a hash do banco 
+        const passwordOK = bcrypt.compareSync(senha,user.senha);
+
+        if (!passwordOK) {
           return res.status(401).json({ error: "Senha incorreta" });
         }
 
@@ -163,7 +170,7 @@ module.exports = class userController {
           expiresIn: "1h",
         });
 
-        delete user.password;
+        delete user.senha;
 
         return res.status(200).json({
           message: "Login bem-sucedido",
