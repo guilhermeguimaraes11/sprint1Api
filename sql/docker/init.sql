@@ -1,7 +1,9 @@
 -- docker-compose up --build
 -- mysql -u root -p
 
--- docker exec -it c32b7034f1f1cb9d09ec8c8b9783a0b0160b4c841333af716fdece267af28b81 mysql -u root -p
+-- docker exec -it 0078a2f86bbc930ed73dd4ff081e915615a0fffd9ccdecebf3a6e439c24fdae6 mysql -u root -p
+
+-- docker compose down
 
 
 -- CREATE DATABASE reserva_senai;
@@ -61,25 +63,25 @@ INSERT INTO usuario (cpf, nomecompleto, email, senha) VALUES
 
 -- Inserindo salas
 INSERT INTO sala (nome, descricao, bloco, tipo, capacidade) VALUES
-('Sala de Reuniões 1', 'Sala de reuniões equipada para conferências', 'A', 'Sala', 20),
-('Laboratório de Informática', 'Laboratório com computadores e softwares de desenvolvimento', 'B', 'Laboratório', 30),
-('Oficina Mecânica', 'Oficina com ferramentas para manutenção de veículos', 'C', 'Oficina', 25),
-('Laboratório de Química', 'Laboratório de experimentos químicos', 'D', 'Laboratório', 15),
+('Sala de Reunioes 1', 'Sala de reunioes equipada para conferencias', 'A', 'Sala', 20),
+('Laboratorio de Informatica', 'Laboratorio com computadores e softwares de desenvolvimento', 'B', 'Laboratorio', 30),
+('Oficina Mecanica', 'Oficina com ferramentas para manutencao de veiculos', 'C', 'Oficina', 25),
+('Laboratorio de Quimica', 'Laboratorio de experimentos quimicos', 'D', 'Laboratorio', 15),
 ('Sala de Aula 101', 'Sala de aula equipada com projetor e quadro branco', 'E', 'Sala', 40),
-('Auditório Principal', 'Auditório para eventos e palestras', 'F', 'Sala', 100),
-('Sala de Estudos', 'Espaço silencioso para estudos individuais', 'G', 'Sala', 12),
-('Laboratório de Física', 'Laboratório para experimentos de física', 'H', 'Laboratório', 18),
+('Auditorio Principal', 'Auditorio para eventos e palestras', 'F', 'Sala', 100),
+('Sala de Estudos', 'Espaco silencioso para estudos individuais', 'G', 'Sala', 12),
+('Laboratorio de Fisica', 'Laboratorio para experimentos de fisica', 'H', 'Laboratorio', 18),
 ('Oficina de Marcenaria', 'Oficina equipada com ferramentas de marcenaria', 'I', 'Oficina', 20),
-('Sala de Videoconferências', 'Sala equipada para videoconferências e apresentações remotas', 'J', 'Sala', 10),
+('Sala de Videoconferencias', 'Sala equipada para videoconferencias e apresentacoes remotas', 'J', 'Sala', 10),
 ('Sala de Treinamento', 'Sala de treinamento para cursos corporativos', 'K', 'Sala', 25),
-('Laboratório de Biologia', 'Laboratório para experimentos biológicos', 'L', 'Laboratório', 16),
-('Sala de Projetos', 'Sala equipada para reuniões de equipe e desenvolvimento de projetos', 'M', 'Sala', 18),
-('Sala Multimídia', 'Sala equipada com recursos audiovisuais e multimídia', 'N', 'Sala', 35),
-('Oficina de Costura', 'Oficina com máquinas e ferramentas para costura', 'O', 'Oficina', 15),
-('Laboratório de Eletrônica', 'Laboratório para experimentos e montagem de circuitos eletrônicos', 'P', 'Laboratório', 20),
-('Sala VIP', 'Sala exclusiva para reuniões de alto nível', 'Q', 'Sala', 8),
-('Oficina de Soldagem', 'Oficina equipada com maquinário para soldagem', 'R', 'Oficina', 12),
-('Laboratório de Culinária', 'Laboratório com equipamentos para aulas práticas de culinária', 'S', 'Laboratório', 12);
+('Laboratorio de Biologia', 'Laboratorio para experimentos biologicos', 'L', 'Laboratorio', 16),
+('Sala de Projetos', 'Sala equipada para reunioes de equipe e desenvolvimento de projetos', 'M', 'Sala', 18),
+('Sala Multimidia', 'Sala equipada com recursos audiovisuais e multimidia', 'N', 'Sala', 35),
+('Oficina de Costura', 'Oficina com maquinas e ferramentas para costura', 'O', 'Oficina', 15),
+('Laboratorio de Eletronica', 'Laboratorio para experimentos e montagem de circuitos eletronicos', 'P', 'Laboratorio', 20),
+('Sala VIP', 'Sala exclusiva para reunioes de alto nivel', 'Q', 'Sala', 8),
+('Oficina de Soldagem', 'Oficina equipada com maquinaria para soldagem', 'R', 'Oficina', 12),
+('Laboratorio de Culinaria', 'Laboratorio com equipamentos para aulas praticas de culinaria', 'S', 'Laboratorio', 12);
 
 -- Inserindo reservas
 INSERT INTO reserva_sala (data, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario) VALUES

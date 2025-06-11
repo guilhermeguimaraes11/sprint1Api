@@ -60,7 +60,7 @@ module.exports = class userController {
     }
   }
   static async updateUser(req, res) {
-    const { cpf, email, senha, nomecompleto } = req.body;
+    const { cpf, email, nomecompleto } = req.body;
     const { id_usuario } = req.params;
 
     if (id_usuario != req.userId) {
@@ -74,10 +74,10 @@ module.exports = class userController {
 
     try {
       const query =
-        "UPDATE usuario SET cpf = ?, email = ?, senha = ?, nomecompleto = ? WHERE id_usuario = ?";
+        "UPDATE usuario SET cpf = ?, email = ?, nomecompleto = ? WHERE id_usuario = ?";
       connect.query(
         query,
-        [cpf, email, senha, nomecompleto, id_usuario],
+        [cpf, email, nomecompleto, id_usuario],
         (err, results) => {
           if (err) {
             if (err.code === "ER_DUP_ENTRY") {
