@@ -24,19 +24,28 @@ module.exports = class reserva_salaController {
     // O req.userId deve estar disponível se o usuário estiver logado.
     // Garante que o usuário só possa criar reservas para si mesmo.
     if (fk_id_usuario != req.userId) {
-        return res.status(403).json({ error: "Acesso não autorizado. Você só pode criar reservas para seu próprio ID de usuário." });
+      return res.status(403).json({ error: "Acesso não autorizado. Você só pode criar reservas para seu próprio ID de usuário." });
     }
 
     try {
+      const validationError = validateSchedule({
+        data,
+        horario_inicio,
+        horario_fim,
+        fk_id_sala,
+        fk_id_usuario,
+      });
+
+      if (validationError) {
+        return res.status(400).json(validationError);
+      }
+
       const now = new Date();
-      now.setHours(now.getHours() - 3); 
-      // Ajusta a data e hora do agendamento para o fuso horário local para comparação precisa
+      now.setHours(now.getHours() - 3);
       const [year, month, day] = data.split("-").map(Number);
       const [startHour, startMinute] = horario_inicio.split(":").map(Number);
-      // Cria uma data com base na data e hora da reserva para comparação
       const dataHoraAgendamento = new Date(year, month - 1, day, startHour - 3, startMinute);
 
-      // Validação de horário passado (já existente no seu código)
       if (dataHoraAgendamento.getTime() < now.getTime()) {
         return res.status(400).json({
           error: "Não é possível reservar para um horário que já passou ou para o momento atual.",
@@ -45,14 +54,14 @@ module.exports = class reserva_salaController {
 
       // Verificação de conflito (já existente no seu código)
       const overlapQuery = `
-        SELECT 1 FROM reserva_sala
-        WHERE fk_id_sala = ?
-          AND data = ?
-          AND (
-            (horario_inicio < ? AND horario_fim > ?)  -- sobreposição
-          )
-        LIMIT 1
-      `;
+          SELECT 1 FROM reserva_sala
+          WHERE fk_id_sala = ?
+            AND data = ?
+            AND (
+              (horario_inicio < ? AND horario_fim > ?)  -- sobreposição
+            )
+          LIMIT 1
+        `;
 
       connect.query(
         overlapQuery,
@@ -73,9 +82,9 @@ module.exports = class reserva_salaController {
 
           // Inserção da reserva
           const insertQuery = `
-            INSERT INTO reserva_sala (data, fk_id_sala, horario_inicio, horario_fim, fk_id_usuario)
-            VALUES (?, ?, ?, ?, ?)
-          `;
+              INSERT INTO reserva_sala (data, fk_id_sala, horario_inicio, horario_fim, fk_id_usuario)
+              VALUES (?, ?, ?, ?, ?)
+            `;
 
           connect.query(
             insertQuery,
@@ -84,7 +93,7 @@ module.exports = class reserva_salaController {
               if (err) {
                 console.error("Erro ao cadastrar agendamento:", err); // Log mais descritivo
                 console.log(err);
-                 return res.status(400).json({ error: err.message });
+                return res.status(400).json({ error: err.message });
                 // if (err.sqlState === '45000' && err.message.includes('A reserva deve ser feita com no mínimo 1 hora de antecedência.')) {
                 //   return res.status(400).json({ error: err.message });
                 // }
@@ -193,7 +202,7 @@ module.exports = class reserva_salaController {
             "15:30 - 17:30",
             "19:00 - 22:00",
           ];
-          
+
           if (reserva_salasByDayAndTimeRange[dayName]) { // Verifica se o dia existe no objeto de estrutura
             timeRanges.forEach((timeRange) => {
               if (isInTimeRange(reserva_sala.horario_inicio, timeRange)) {
@@ -414,11 +423,11 @@ module.exports = class reserva_salaController {
     // O req.userId deve estar disponível se o usuário estiver logado.
     // Garante que o usuário só possa atualizar suas próprias reservas.
     if (fk_id_usuario != req.userId) { // Assumindo que fk_id_usuario no body é o ID do usuário que fez a reserva
-        // Você pode precisar buscar a reserva para verificar fk_id_usuario
-        // ou garantir que o middleware verifyJWT anexe o ID do usuário da reserva ao req.
-        return res.status(403).json({ error: "Acesso não autorizado. Você só pode atualizar suas próprias reservas." });
+      // Você pode precisar buscar a reserva para verificar fk_id_usuario
+      // ou garantir que o middleware verifyJWT anexe o ID do usuário da reserva ao req.
+      return res.status(403).json({ error: "Acesso não autorizado. Você só pode atualizar suas próprias reservas." });
     }
-  
+
     try {
       // Converte a string data para o formato YYYY-MM-DD esperado pelo MySQL
       const date = new Date(data);
@@ -426,18 +435,18 @@ module.exports = class reserva_salaController {
       const mes = (date.getMonth() + 1).toString().padStart(2, "0");
       const dia = date.getDate().toString().padStart(2, "0");
       const dataFormatada = `${ano}-${mes}-${dia}`;
-  
+
       // Cria Date para comparar data e horário local
       const now = new Date();
       const [startHour, startMinute] = horario_inicio.split(":").map(Number);
       const dataHoraAgendamento = new Date(ano, date.getMonth(), dia, startHour, startMinute);
-  
+
       if (dataHoraAgendamento < now) {
         return res.status(400).json({
           error: "Não é possível atualizar para um horário que já passou.",
         });
       }
-  
+
       const overlapQuery = `
         SELECT 1 FROM reserva_sala
         WHERE fk_id_sala = ?
@@ -448,7 +457,7 @@ module.exports = class reserva_salaController {
           )
         LIMIT 1
       `;
-  
+
       connect.query(
         overlapQuery,
         [fk_id_sala, dataFormatada, idReserva, horario_fim, horario_inicio],
@@ -457,17 +466,17 @@ module.exports = class reserva_salaController {
             console.log(err);
             return res.status(500).json({ error: "Erro ao verificar conflitos." });
           }
-  
+
           if (results.length > 0) {
             return res.status(409).json({ error: "Já existe uma reserva nesse horário para esta sala." });
           }
-  
+
           const updateQuery = `
             UPDATE reserva_sala
             SET data = ?, horario_inicio = ?, horario_fim = ?, fk_id_sala = ?, fk_id_usuario = ?
             WHERE id_reserva = ?
           `;
-  
+
           connect.query(
             updateQuery,
             [dataFormatada, horario_inicio, horario_fim, fk_id_sala, fk_id_usuario, idReserva],
@@ -480,11 +489,11 @@ module.exports = class reserva_salaController {
                 }
                 return res.status(500).json({ error: "Erro ao atualizar reserva." });
               }
-  
+
               if (result.affectedRows === 0) {
                 return res.status(404).json({ error: "Reserva não encontrada." });
               }
-  
+
               return res.status(200).json({ message: "Reserva atualizada com sucesso." });
             }
           );
@@ -495,7 +504,7 @@ module.exports = class reserva_salaController {
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
-  
+
   static async getReservas_id(req, res) {
     const id = req.params.id;
     // ATENÇÃO: A tabela 'schedule' não existe no seu schema SQL.
