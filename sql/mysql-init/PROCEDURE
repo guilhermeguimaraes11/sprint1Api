@@ -13,5 +13,5 @@ END //
 DELIMITER ;
 
 -- Chamando a Procedure:
-CALL listar_reservas_por_usuario(1);
+CALL listar_reservas_por_usuario(24);
 

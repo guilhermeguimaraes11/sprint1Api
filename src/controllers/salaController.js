@@ -134,36 +134,41 @@ module.exports = class salaController {
     }
   }
 
-  static async getSalaDetails(req, res) {
-    const salaId = req.params.id_sala;
+     // FUNCTION
+     
+static async getSalaDetails(req, res) {
+  const salaId = req.params.id_sala; 
 
-    const querySala = `SELECT * FROM sala WHERE id_sala = ?`;
-    const queryTotalReservas = `SELECT total_reservas_por_sala(?) AS total_reservas`;
+  const querySala = `SELECT * FROM sala WHERE id_sala = ?`; 
+  const queryTotalReservas = `SELECT total_reservas_por_sala(?) AS total_reservas`; //retorna o total de reservas para uma sala.
 
-    try {
-      // Obter detalhes da sala
-      const salaResult = await new Promise((resolve, reject) => {
-        connect.query(querySala, [salaId], (err, results) => {
-          if (err) return reject(err);
-          resolve(results);
-        });
+  try {
+    // Obter detalhes da sala
+    // Executa a query para obter os detalhes da sala de forma assíncrona usando uma Promise.
+    const salaResult = await new Promise((resolve, reject) => {
+      connect.query(querySala, [salaId], (err, results) => {
+        if (err) return reject(err); // Em caso de erro, rejeita a Promise.
+        resolve(results); 
       });
+    });
 
-      if (salaResult.length === 0) {
-        return res.status(404).json({ error: "Sala não encontrada" });
-      }
+    if (salaResult.length === 0) {
+      return res.status(404).json({ error: "Sala não encontrada" }); 
+    }
 
-      const sala = salaResult[0];
+    const sala = salaResult[0]; // Pega o primeiro resultado, que são os detalhes da sala.
 
-      // Obter o total de reservas para esta sala usando a função MySQL
-      const totalReservasResult = await new Promise((resolve, reject) => {
-        connect.query(queryTotalReservas, [salaId], (err, results) => {
-          if (err) return reject(err);
-          resolve(results);
-        });
+    // Obter o total de reservas para esta sala usando a função MySQL
+    // Executa a query para obter o total de reservas da sala de forma assíncrona usando uma Promise.
+    const totalReservasResult = await new Promise((resolve, reject) => {
+      connect.query(queryTotalReservas, [salaId], (err, results) => {
+        if (err) return reject(err); // Em caso de erro, rejeita a Promise.
+        resolve(results); 
       });
+    });
 
-      const totalReservas = totalReservasResult[0].total_reservas;
+    const totalReservas = totalReservasResult[0].total_reservas; 
+
 
       // Combinar os resultados e enviar
       return res.status(200).json({

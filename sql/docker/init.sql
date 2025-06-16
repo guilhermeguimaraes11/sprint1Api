@@ -1,6 +1,6 @@
 -- docker-compose up --build
 --  
--- docker exec -it 0078a2f86bbc930ed73dd4ff081e915615a0fffd9ccdecebf3a6e439c24fdae6 mysql -u root -p
+-- docker exec -it 0078a2f86bbc930ed73dd4ff081e915615a0fffd9ccdecebf3a6e439c24fdae6 mysql -u root -pmysql -u root -p
 -- docker compose down
 
 

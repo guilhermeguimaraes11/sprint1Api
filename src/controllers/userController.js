@@ -2,7 +2,7 @@ const connect = require("../db/connect");
 const validateUser = require("../services/validateUser");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const SALT_ROUNDS = 10;
+const SALT_ROUNDS = 10; // Número de rounds para gerar o hash
 
 module.exports = class userController {
   static async createUser(req, res) {
@@ -13,6 +13,7 @@ module.exports = class userController {
       return res.status(400).json(validationError);
     }
 
+    // Criptografar a senha antes de salvar
     const hashedPassword = await bcrypt.hash(senha, SALT_ROUNDS);
 
     try {
@@ -159,7 +160,7 @@ module.exports = class userController {
 
         const user = results[0];
 
-        // Comparar a senha enviada na requisiçao com a hash do banco 
+        // Comparar a senha com a hash do banco 
         const passwordOK = bcrypt.compareSync(senha,user.senha);
 
         if (!passwordOK) {
@@ -185,33 +186,38 @@ module.exports = class userController {
   }
 
   static async listUserReservations(req, res) {
-    const userId = req.params.id_usuario;
+    const userId = req.params.id_usuario; // Extrai o ID do usuário dos parâmetros da URL
 
     if (userId != req.userId) {
+      //autenticado 
       return res.status(403).json({ error: "Acesso não autorizado" });
     }
 
-    const query = `CALL listar_reservas_por_usuario(?)`;
+    const query = `CALL listar_reservas_por_usuario(?)`; // Chama a procedure do banco de dados
 
     try {
       connect.query(query, [userId], (err, results) => {
+        // Executa a stored procedure
         if (err) {
+          // Em caso de erro 
           console.error("Erro ao executar a procedure:", err);
           return res.status(500).json({ error: "Erro interno do servidor" });
         }
 
-        const reservations = results[0];
+        const reservations = results[0]; // As reservas são retornadas no primeiro elemento do array de resultados
 
         if (reservations.length === 0) {
           return res.status(404).json({ message: "Nenhuma reserva encontrada para este usuário." });
         }
 
+        // Retorna as reservas encontradas para o usuário
         return res.status(200).json({
           message: `Reservas para o usuário ID: ${userId}`,
           reservations: reservations,
         });
       });
     } catch (error) {
+      
       console.error("Erro ao listar as reservas do usuário:", error);
       return res.status(500).json({ error: "Erro interno do servidor" });
     }

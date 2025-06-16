@@ -16,4 +16,4 @@ END$$
 
 DELIMITER ;
 
--- SELECT total_reservas_por_sala(5);
+-- SELECT total_reservas_por_sala(1);
